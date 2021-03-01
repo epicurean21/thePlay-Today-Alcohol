@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Api(tags = {"999. ZZZ (예시 API)"})
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/v1")
 @Slf4j(topic = "ZZZ Logger")
 @RequiredArgsConstructor
 @RestController

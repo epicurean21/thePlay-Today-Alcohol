@@ -21,7 +21,7 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("kr.co.theplay.api")) //해당 패키지 중 RequestMapping으로 할당된 URL 리스트 추출
                 .apis(RequestHandlerSelectors.any()) //RequestMapping 된 모든 URL 리스트 추출
-                .paths(PathSelectors.ant("/api/**")) //그 중 /api/**인 URL들만 필터링
+                .paths(PathSelectors.ant("/v1/**")) //그 중 /api/**인 URL들만 필터링
                 .build();
     }
 
