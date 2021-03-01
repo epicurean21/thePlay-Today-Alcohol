@@ -1,4 +1,4 @@
-package kr.co.theplay.api;
+package kr.co.theplay.api.zzz;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
