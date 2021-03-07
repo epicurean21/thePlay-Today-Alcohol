@@ -3,8 +3,8 @@ package kr.co.theplay.api.zzz;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import kr.co.theplay.dto.zzz.ZUserReqDto;
-import kr.co.theplay.service.common.ResponseService;
-import kr.co.theplay.service.common.model.CommonResult;
+import kr.co.theplay.service.api.common.ResponseService;
+import kr.co.theplay.service.api.common.model.CommonResult;
 import kr.co.theplay.service.zzz.ZUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +31,12 @@ public class ZUserController {
     @PostMapping(value = "/user")
     public ResponseEntity<CommonResult> saveZUser(@RequestBody ZUserReqDto zUserReqDto) {
         zUserService.saveZUser(zUserReqDto);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/user/{userId}")
+    public ResponseEntity<CommonResult> updateZUser(@PathVariable Long userId, @RequestBody ZUserReqDto zUserReqDto){
+        zUserService.updateZUser(userId, zUserReqDto);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 }

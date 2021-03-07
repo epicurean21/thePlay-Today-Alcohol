@@ -1,8 +1,8 @@
-package kr.co.theplay.service.common;
+package kr.co.theplay.service.api.common;
 
-import kr.co.theplay.service.common.model.CommonResult;
-import kr.co.theplay.service.common.model.ListResult;
-import kr.co.theplay.service.common.model.SingleResult;
+import kr.co.theplay.service.api.common.model.CommonResult;
+import kr.co.theplay.service.api.common.model.ListResult;
+import kr.co.theplay.service.api.common.model.SingleResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
