@@ -1,7 +1,9 @@
 spring:
   profiles:
     include: real-db
-
+  messages:
+    basename: i18n/exception
+    encoding: UTF-8
 
   jpa:
     show-sql: true
@@ -13,3 +15,4 @@ spring:
 
   session:
     store-type: jdbc
+

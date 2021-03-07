@@ -1,0 +1,8 @@
+#exception_ko.xml
+userNotFound:
+  code: "-1000"
+  msg: "존재하지 않는 회원입니다."
+
+invalidId:
+  code: "-1001"
+  msg: "잘못된 id입니다."

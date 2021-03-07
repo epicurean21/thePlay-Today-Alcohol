@@ -1,7 +1,7 @@
 package kr.co.theplay.service.api.config;
 
-import lombok.Value;
 import net.rakugakibox.util.YamlResourceBundle;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +33,7 @@ public class MessageConfiguration implements WebMvcConfigurer {
         return lci;
     }
 
-/*    @Override
+    @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
     }
@@ -41,10 +41,16 @@ public class MessageConfiguration implements WebMvcConfigurer {
     @Bean
     public MessageSource messageSource(
             @Value("${spring.messages.basename}") String basename,
-            @Value("${spring.message.encoding}")String encoding
+            @Value("${spring.messages.encoding}") String encoding
     ){
-
-    }*/
+        YamlMessageSource ms = new YamlMessageSource();
+        ms.setBasename(basename);
+        ms.setDefaultEncoding(encoding);
+        ms.setAlwaysUseMessageFormat(true);
+        ms.setUseCodeAsDefaultMessage(true);
+        ms.setFallbackToSystemLocale(true);
+        return ms;
+    }
 
     private static class YamlMessageSource extends ResourceBundleMessageSource{
         @Override

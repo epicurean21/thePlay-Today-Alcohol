@@ -84,7 +84,9 @@ public class ResponseService {
 
     public CommonResult getFailResult(int code, String msg){
         CommonResult result = new CommonResult();
-        setFailResult(result);
+        result.setSuccess(false);
+        result.setCode(code);
+        result.setMsg(msg);
         return result;
     }
 }

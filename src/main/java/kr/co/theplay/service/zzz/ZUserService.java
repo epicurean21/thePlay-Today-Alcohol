@@ -3,6 +3,7 @@ package kr.co.theplay.service.zzz;
 import kr.co.theplay.domain.zzz.ZUser;
 import kr.co.theplay.domain.zzz.ZUserRepository;
 import kr.co.theplay.dto.zzz.ZUserReqDto;
+import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public class ZUserService {
 
     @Transactional
     public void updateZUser(Long id, ZUserReqDto zUserReqDto) {
-        ZUser zUser = zUserRepository.findById(id).orElse(null);
+        ZUser zUser = zUserRepository.findById(id).orElseThrow(() -> new CommonNotFoundException("invalidId"));
         zUser.updateUser(zUserReqDto.getName(), zUserReqDto.getPhoneNumber());
     }
 }
