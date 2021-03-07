@@ -1,12 +1,6 @@
-#spring.profiles.include=real-db
-#spring.jpa.show_sql=true
-#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
-#spring.h2.console.enabled=true
-#spring.session.store-type=jdbc
-
 spring:
   profiles:
-    include: db
+    include: real-db
 
 
   jpa:
