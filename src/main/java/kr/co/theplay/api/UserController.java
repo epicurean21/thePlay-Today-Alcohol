@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 
@@ -43,7 +44,7 @@ public class UserController {
     @PostMapping("/sign-up")
     public ResponseEntity<CommonResult> signUp(
             @ApiParam(value = "회원가입용 Dto", required = true) @RequestBody @Valid SignUpDto signUpDto,
-            Errors errors
+            @ApiIgnore Errors errors
             )
     {
         log.info("try login info : "+ signUpDto.getEmail());
