@@ -2,9 +2,7 @@ package kr.co.theplay.api.advice;
 
 import io.swagger.models.auth.In;
 import jdk.nashorn.internal.runtime.ECMAException;
-import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
-import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
-import kr.co.theplay.service.api.advice.exception.CommonRuntimeException;
+import kr.co.theplay.service.api.advice.exception.*;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,7 @@ public class ExceptionAdvice {
 
     /**
      *
-     * BAD REQUEST 에 대한 공통처리리     */
+     * BAD REQUEST 에 대한 공통처리     */
 
     @ExceptionHandler(CommonNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -40,12 +38,32 @@ public class ExceptionAdvice {
 
     /**
      *
-     * BAD REQUEST 에 대한 공통처리리     */
+     * BAD REQUEST 에 대한 공통처리     */
 
     @ExceptionHandler(CommonBadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected CommonResult CommonBadRequest(HttpServletRequest request, CommonBadRequestException e) {
         return generateFailResult(request, e);
+    }
+
+    /**
+     *
+     * CONFLICT 에 대한 공통처리     */
+
+    @ExceptionHandler(CommonConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    protected CommonResult CommonConflict(HttpServletRequest request, CommonConflictException e) {
+        return generateFailResult(request, e);
+    }
+
+    /**
+     *
+     * API PARAM VALIDATION 에 대한 공통처리     */
+
+    @ExceptionHandler(ApiParamNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected CommonResult apiParamNotValid(HttpServletRequest request, ApiParamNotValidException e) {
+        return responseService.getSingleParamFailResult(e.getErrors());
     }
 
     private CommonResult generateFailResult(HttpServletRequest request, CommonRuntimeException e){

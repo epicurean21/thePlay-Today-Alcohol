@@ -23,7 +23,7 @@ public class ZUserService {
 
     @Transactional
     public void updateZUser(Long id, ZUserReqDto zUserReqDto) {
-        ZUser zUser = zUserRepository.findById(id).orElseThrow(() -> new CommonNotFoundException("invalidId"));
+        ZUser zUser = zUserRepository.findById(id).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         zUser.updateUser(zUserReqDto.getName(), zUserReqDto.getPhoneNumber());
     }
 }

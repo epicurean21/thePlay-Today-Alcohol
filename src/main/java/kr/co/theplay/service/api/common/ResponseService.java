@@ -89,4 +89,13 @@ public class ResponseService {
         result.setMsg(msg);
         return result;
     }
+
+    public <T> SingleResult<T> getSingleParamFailResult(T data) {
+        SingleResult<T> result = new SingleResult<>();
+        result.setData(data);
+        setFailResult(result);
+        return result;
+    }
+
+
 }
