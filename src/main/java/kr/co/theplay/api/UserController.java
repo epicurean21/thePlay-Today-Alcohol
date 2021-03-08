@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-@Api(tags = {"101. User (회원인증 및 회원정보"})
+@Api(tags = {"101. User (회원인증 및 회원정보)"})
 @RequestMapping(value = "/v1")
 @Slf4j(topic = "UserLogger")
 @RequiredArgsConstructor
