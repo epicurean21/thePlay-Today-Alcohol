@@ -5,14 +5,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kr.co.theplay.api.config.security.JwtTokenProvider;
 import kr.co.theplay.domain.user.UserRepository;
-import kr.co.theplay.domain.user.UserFindPasswordDto;
-import kr.co.theplay.domain.user.UserSendEmailDto;
-import kr.co.theplay.domain.user.User;
+import kr.co.theplay.dto.user.UserFindPasswordDto;
+import kr.co.theplay.dto.user.UserSendEmailDto;
 import kr.co.theplay.dto.user.SignInDto;
 import kr.co.theplay.dto.user.SignUpDto;
 import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
-import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
 import kr.co.theplay.service.user.UserFindPasswordService;
@@ -57,7 +55,7 @@ public class UserController {
     ) {
         log.info("try login info : " + signUpDto.getEmail());
 
-        if(errors.hasErrors()){
+        if (errors.hasErrors()) {
             throw new ApiParamNotValidException(errors);
         }
 
@@ -94,7 +92,7 @@ public class UserController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<SingleResult<String>> signIn(@RequestBody SignInDto signInDto){
+    public ResponseEntity<SingleResult<String>> signIn(@RequestBody SignInDto signInDto) {
 
         String token = userService.signIn(signInDto);
         SingleResult<String> result = responseService.getSingleResult(token);

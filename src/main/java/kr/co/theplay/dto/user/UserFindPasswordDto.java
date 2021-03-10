@@ -1,4 +1,4 @@
-package kr.co.theplay.domain.user;
+package kr.co.theplay.dto.user;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -11,12 +11,8 @@ public class UserFindPasswordDto {
     @ApiModelProperty(value = "이메일", dataType = "String", required = true, example = "test@test.com")
     private String email;
 
-    @ApiModelProperty(value = "비밀번호", dataType = "String", required = true, example = "password")
-    private String password;
-
     @Builder
-    public UserFindPasswordDto(String email, String password) {
+    public UserFindPasswordDto(String email) {
         this.email = email;
-        this.password = password;
     }
 }

@@ -1,4 +1,4 @@
-package kr.co.theplay.domain.user;
+package kr.co.theplay.dto.user;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package kr.co.theplay.service.user;
 
 import kr.co.theplay.domain.user.UserRepository;
-import kr.co.theplay.domain.user.UserSendEmailDto;
+import kr.co.theplay.dto.user.UserSendEmailDto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
