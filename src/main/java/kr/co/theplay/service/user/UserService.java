@@ -7,8 +7,15 @@ import kr.co.theplay.domain.user.UserRoleRepository;
 import kr.co.theplay.dto.user.SignUpDto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -17,6 +24,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
+
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public void signUp(SignUpDto signUpDto) {
@@ -45,5 +55,18 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonConflictException("userNotFound"));
         user.updateUserPassword(password);
         userRepository.save(user);
+    }
+
+
+    public String signIn(SignInDto signInDto) {
+        User user = userRepository.findByEmail(signInDto.getEmail())
+                .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+
+        if(!passwordEncoder.matches(signInDto.getPassword(), user.getPassword())){
+            throw new CommonBadRequestException("passwordDenied");
+        }
+        List<String> roles = new ArrayList<>();
+        roles.add(user.getUserRole().getRoleName());
+        return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
     }
 }
