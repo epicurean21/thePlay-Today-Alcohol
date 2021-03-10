@@ -1,7 +1,6 @@
 package kr.co.theplay.api.advice;
 
 import io.swagger.models.auth.In;
-import jdk.nashorn.internal.runtime.ECMAException;
 import kr.co.theplay.service.api.advice.exception.*;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
@@ -27,18 +26,18 @@ public class ExceptionAdvice {
     private final MessageSource messageSource;
 
     /**
-     *
-     * BAD REQUEST 에 대한 공통처리     */
+     * BAD REQUEST 에 대한 공통처리
+     */
 
     @ExceptionHandler(CommonNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected CommonResult CommonNotFound(HttpServletRequest request, CommonNotFoundException e){
+    protected CommonResult CommonNotFound(HttpServletRequest request, CommonNotFoundException e) {
         return generateFailResult(request, e);
     }
 
     /**
-     *
-     * BAD REQUEST 에 대한 공통처리     */
+     * BAD REQUEST 에 대한 공통처리
+     */
 
     @ExceptionHandler(CommonBadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -47,8 +46,8 @@ public class ExceptionAdvice {
     }
 
     /**
-     *
-     * CONFLICT 에 대한 공통처리     */
+     * CONFLICT 에 대한 공통처리
+     */
 
     @ExceptionHandler(CommonConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -57,8 +56,8 @@ public class ExceptionAdvice {
     }
 
     /**
-     *
-     * API PARAM VALIDATION 에 대한 공통처리     */
+     * API PARAM VALIDATION 에 대한 공통처리
+     */
 
     @ExceptionHandler(ApiParamNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -66,18 +65,18 @@ public class ExceptionAdvice {
         return responseService.getSingleParamFailResult(e.getErrors());
     }
 
-    private CommonResult generateFailResult(HttpServletRequest request, CommonRuntimeException e){
+    private CommonResult generateFailResult(HttpServletRequest request, CommonRuntimeException e) {
         return responseService.getFailResult(
                 Integer.parseInt(getMessage(e.getMessage() + ".code")),
-                getMessage(e.getMessage()+".msg", e.getDetailMessages())
+                getMessage(e.getMessage() + ".msg", e.getDetailMessages())
         );
     }
 
-    private String getMessage(String code){
+    private String getMessage(String code) {
         return getMessage(code, null);
     }
 
-    private String getMessage(String code, Object[] args){
+    private String getMessage(String code, Object[] args) {
         return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
     }
 }

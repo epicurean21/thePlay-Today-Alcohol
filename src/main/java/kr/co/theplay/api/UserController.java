@@ -5,11 +5,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kr.co.theplay.api.config.security.JwtTokenProvider;
 import kr.co.theplay.domain.user.UserRepository;
+import kr.co.theplay.domain.user.UserFindPasswordDto;
+import kr.co.theplay.domain.user.UserSendEmailDto;
 import kr.co.theplay.dto.user.SignUpDto;
 import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
+import kr.co.theplay.service.user.UserFindPasswordService;
 import kr.co.theplay.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,22 +42,23 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
+    private final UserFindPasswordService userFindPasswordService;
+
     //회원가입
     @ApiOperation(value = "회원가입", notes = "회원가입을 한다.")
     @PostMapping("/sign-up")
     public ResponseEntity<CommonResult> signUp(
             @ApiParam(value = "회원가입용 Dto", required = true) @RequestBody @Valid SignUpDto signUpDto,
             @ApiIgnore Errors errors
-            )
-    {
-        log.info("try login info : "+ signUpDto.getEmail());
+    ) {
+        log.info("try login info : " + signUpDto.getEmail());
 
-        if(errors.hasErrors()){
+        if (errors.hasErrors()) {
             throw new ApiParamNotValidException(errors);
         }
 
         //valid를 통과했다면 password, confirmPassword 비교
-        if(! signUpDto.getPassword().equals(signUpDto.getConfirmPassword())){
+        if (!signUpDto.getPassword().equals(signUpDto.getConfirmPassword())) {
             throw new CommonBadRequestException("passwordNotMatched");
         }
 
@@ -64,6 +68,23 @@ public class UserController {
         userService.signUp(signUpDto);
 
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
 
+    @ApiOperation(value = "비밀번호 찾기", notes = "비밀번호 찾기 이메일 전송")
+    @PostMapping(value = "/find_password")
+    public ResponseEntity<CommonResult> findPassword(
+            @ApiParam(value = "비밀번호 찾기 이메일 Dto", required = true) @RequestBody UserFindPasswordDto userFindPasswordDto,
+            @ApiIgnore Errors errors
+    ) {
+        log.info("try find password info : " + userFindPasswordDto.getEmail());
+
+        if (errors.hasErrors()) {
+            throw new ApiParamNotValidException(errors);
+        }
+
+        UserSendEmailDto userSendEmailDto = userFindPasswordService.createMailAndChangePassword(userFindPasswordDto.getEmail());
+        userFindPasswordService.sendEmail(userSendEmailDto);
+
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 }

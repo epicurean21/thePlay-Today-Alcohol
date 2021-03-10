@@ -24,12 +24,12 @@ public class UserService {
         User user = SignUpDtoMapper.INSTANCE.toEntity(signUpDto);
 
         //이미 가입한 회원인지 email 확인
-        if(userRepository.findByEmail(signUpDto.getEmail()).isPresent()){
+        if (userRepository.findByEmail(signUpDto.getEmail()).isPresent()) {
             throw new CommonConflictException("userDuplication");
         }
 
         //닉네임 중복 확인
-        if(userRepository.findByNickname(signUpDto.getNickname()).isPresent()){
+        if (userRepository.findByNickname(signUpDto.getNickname()).isPresent()) {
             throw new CommonConflictException("nicknameDuplication");
         }
 
@@ -38,5 +38,12 @@ public class UserService {
         //Role 생성
         UserRole userRole = UserRole.builder().user(user).roleName("ROLE_USER").build();
         userRoleRepository.save(userRole);
+    }
+
+    @Transactional
+    public void updateUserPassword(String email, String password) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonConflictException("userNotFound"));
+        user.updateUserPassword(password);
+        userRepository.save(user);
     }
 }

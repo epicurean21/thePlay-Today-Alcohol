@@ -21,9 +21,9 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private String secretKey = "USwKYibQQTgkW7g-*k.ap9kje-wxBHb9wdXoBT4vnt4P3sJWt-Nu!";
+    private String secretKey = "USwKYibQQThePlay-*k.ap9kje-wxBHb9wdXoBTodaysAlcohol4vnt4P3sJWt-Nu!";
 
-    private long tokenValidTime = 3000 * 60 * 1000L;
+    private long tokenValidTime = 30000 * 60 * 1000L;
 
     private final UserDetailsService userDetailsService;
 

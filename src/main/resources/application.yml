@@ -16,3 +16,28 @@ spring:
   session:
     store-type: jdbc
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: todaysalcohol@gmail.com
+    password: aoboykczsohchjlf
+    protocol: smtp
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIAIILEUPFR4R5HXFHQ
+      secretKey: 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
+    s3:
+      bucket: theplay
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
