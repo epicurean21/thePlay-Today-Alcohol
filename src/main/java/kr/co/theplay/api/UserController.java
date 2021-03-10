@@ -3,13 +3,15 @@ package kr.co.theplay.api;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import kr.co.theplay.api.config.security.JwtTokenProvider;
-import kr.co.theplay.domain.user.UserRepository;
+import kr.co.theplay.domain.user.User;
+import kr.co.theplay.dto.user.SignInDto;
 import kr.co.theplay.dto.user.SignUpDto;
 import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
+import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
+import kr.co.theplay.service.api.common.model.SingleResult;
 import kr.co.theplay.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +38,6 @@ public class UserController {
     private final ResponseService responseService;
 
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
 
     //회원가입
     @ApiOperation(value = "회원가입", notes = "회원가입을 한다.")
@@ -65,5 +65,14 @@ public class UserController {
 
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
 
+    }
+
+    @PostMapping("/sign-in")
+    public ResponseEntity<SingleResult<String>> signIn(@RequestBody SignInDto signInDto){
+
+        String token = userService.signIn(signInDto);
+        SingleResult<String> result = responseService.getSingleResult(token);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
