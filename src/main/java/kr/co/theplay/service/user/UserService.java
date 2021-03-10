@@ -1,11 +1,15 @@
 package kr.co.theplay.service.user;
 
+import kr.co.theplay.api.config.security.JwtTokenProvider;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.domain.user.UserRole;
 import kr.co.theplay.domain.user.UserRoleRepository;
+import kr.co.theplay.dto.user.SignInDto;
 import kr.co.theplay.dto.user.SignUpDto;
+import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
+import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
