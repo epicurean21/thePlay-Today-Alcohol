@@ -23,7 +23,7 @@ public class JwtTokenProvider {
 
     private String secretKey = "USwKYibQQThePlay-*k.ap9kje-wxBHb9wdXoBTodaysAlcohol4vnt4P3sJWt-Nu!";
 
-    private long tokenValidTime = 30000 * 60 * 1000L;
+    private long tokenValidTime = 90000 * 60 * 1000L;
 
     private final UserDetailsService userDetailsService;
 

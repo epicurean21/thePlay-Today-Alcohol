@@ -66,9 +66,10 @@ public class UserService {
         User user = userRepository.findByEmail(signInDto.getEmail())
                 .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
 
-        if(!passwordEncoder.matches(signInDto.getPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(signInDto.getPassword(), user.getPassword())) {
             throw new CommonBadRequestException("passwordDenied");
         }
+
         List<String> roles = new ArrayList<>();
         roles.add(user.getUserRole().getRoleName());
         return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);

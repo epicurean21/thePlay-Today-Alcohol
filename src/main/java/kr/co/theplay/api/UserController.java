@@ -72,8 +72,8 @@ public class UserController {
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "비밀번호 찾기", notes = "비밀번호 찾기 이메일 전송")
-    @PostMapping(value = "/find_password")
+    @ApiOperation(value = "비밀번호 찾기", notes = "비밀번호 찾기 이메일 전송.")
+    @PostMapping(value = "/find-password")
     public ResponseEntity<CommonResult> findPassword(
             @ApiParam(value = "비밀번호 찾기 이메일 Dto", required = true) @RequestBody UserFindPasswordDto userFindPasswordDto,
             @ApiIgnore Errors errors
@@ -91,8 +91,17 @@ public class UserController {
 
     }
 
+    @ApiOperation(value = "로그인", notes = "로그인을 하고 Token을 받는다.")
     @PostMapping("/sign-in")
-    public ResponseEntity<SingleResult<String>> signIn(@RequestBody SignInDto signInDto) {
+    public ResponseEntity<SingleResult<String>> signIn(
+            @ApiParam(value = "로그인 Dto", required = true) @RequestBody SignInDto signInDto,
+            @ApiIgnore Errors errors
+    ) {
+        log.info("try sign in info : " + signInDto.getEmail());
+
+        if (errors.hasErrors()) {
+            throw new ApiParamNotValidException(errors);
+        }
 
         String token = userService.signIn(signInDto);
         SingleResult<String> result = responseService.getSingleResult(token);

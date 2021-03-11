@@ -41,6 +41,6 @@ public class SignUpDto {
     }
 
     public void encodePassword(String encodePassword){
-        this.password = password;
+        this.password = encodePassword;
     }
 }

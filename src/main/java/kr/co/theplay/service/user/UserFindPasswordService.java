@@ -23,6 +23,7 @@ public class UserFindPasswordService {
     private JavaMailSender mailSender;
     private static final String FROM_ADDRESS = "todaysalcohol@gmail.com";
 
+    @Transactional
     public UserSendEmailDto createMailAndChangePassword(String email) {
         if (!userRepository.findByEmail(email).isPresent()) {
             throw new CommonConflictException("userNotFound");
