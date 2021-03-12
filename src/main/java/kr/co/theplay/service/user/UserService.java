@@ -7,6 +7,7 @@ import kr.co.theplay.domain.user.UserRole;
 import kr.co.theplay.domain.user.UserRoleRepository;
 import kr.co.theplay.dto.user.SignInDto;
 import kr.co.theplay.dto.user.SignUpDto;
+import kr.co.theplay.dto.user.UserUpdateNicknameDto;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
@@ -62,16 +63,43 @@ public class UserService {
     }
 
 
-    public String signIn(SignInDto signInDto) {
+    public void signIn(SignInDto signInDto) {
+        // 존재하는 사용자인지 확인
         User user = userRepository.findByEmail(signInDto.getEmail())
                 .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
 
+        // 비밀번호 일치 여부 확인
         if (!passwordEncoder.matches(signInDto.getPassword(), user.getPassword())) {
             throw new CommonBadRequestException("passwordDenied");
         }
+    }
 
+    public String getLoginToken(SignInDto signInDto) {
+        User user = userRepository.findByEmail(signInDto.getEmail())
+                .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         List<String> roles = new ArrayList<>();
         roles.add(user.getUserRole().getRoleName());
         return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
+    }
+
+    public String getSignInToken(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        List<String> roles = new ArrayList<>();
+        roles.add(user.getUserRole().getRoleName());
+        return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
+    }
+
+    @Transactional
+    public void updateUserNickname(UserUpdateNicknameDto userUpdateNicknameDto, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+
+        if (userRepository.findByNickname(userUpdateNicknameDto.getNickname()).isPresent()) {
+            throw new CommonConflictException("nicknameDuplication");
+        }
+
+        user.updateUserNickname(userUpdateNicknameDto.getNickname());
+        userRepository.save(user);
     }
 }

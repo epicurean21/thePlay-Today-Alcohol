@@ -1,14 +1,9 @@
 package kr.co.theplay.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import kr.co.theplay.api.config.security.JwtTokenProvider;
 import kr.co.theplay.domain.user.UserRepository;
-import kr.co.theplay.dto.user.UserFindPasswordDto;
-import kr.co.theplay.dto.user.UserSendEmailDto;
-import kr.co.theplay.dto.user.SignInDto;
-import kr.co.theplay.dto.user.SignUpDto;
+import kr.co.theplay.dto.user.*;
 import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.common.ResponseService;
@@ -20,12 +15,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
@@ -72,6 +66,34 @@ public class UserController {
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 
+    //회원가입 + 토큰 발급
+    @ApiOperation(value = "회원가입", notes = "회원가입을 한다.")
+    @PostMapping("/sign-up-with-token")
+    public ResponseEntity<SingleResult<String>> signUpWithToken(
+            @ApiParam(value = "회원가입용 Dto", required = true) @RequestBody @Valid SignUpDto signUpDto,
+            @ApiIgnore Errors errors
+    ) {
+        log.info("try login info : " + signUpDto.getEmail());
+
+        if (errors.hasErrors()) {
+            throw new ApiParamNotValidException(errors);
+        }
+
+        //valid를 통과했다면 password, confirmPassword 비교
+        if (!signUpDto.getPassword().equals(signUpDto.getConfirmPassword())) {
+            throw new CommonBadRequestException("passwordNotMatched");
+        }
+
+        String password = signUpDto.getPassword();
+        signUpDto.encodePassword(passwordEncoder.encode(password));
+
+        userService.signUp(signUpDto);
+        String token = userService.getSignInToken(signUpDto.getEmail());
+        SingleResult<String> result = responseService.getSingleResult(token);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @ApiOperation(value = "비밀번호 찾기", notes = "비밀번호 찾기 이메일 전송.")
     @PostMapping(value = "/find-password")
     public ResponseEntity<CommonResult> findPassword(
@@ -92,7 +114,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "로그인", notes = "로그인을 하고 Token을 받는다.")
-    @PostMapping("/sign-in")
+    @PostMapping(value = "/sign-in")
     public ResponseEntity<SingleResult<String>> signIn(
             @ApiParam(value = "로그인 Dto", required = true) @RequestBody SignInDto signInDto,
             @ApiIgnore Errors errors
@@ -103,9 +125,34 @@ public class UserController {
             throw new ApiParamNotValidException(errors);
         }
 
-        String token = userService.signIn(signInDto);
+        // 여기서 validation을 해준다
+        userService.signIn(signInDto);
+
+        // 존재하는 회원, 올바른 비밀번호 입력이니 token을 발급받는다.
+        String token = userService.getLoginToken(signInDto);
         SingleResult<String> result = responseService.getSingleResult(token);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "회원 닉네임 변경", notes = "회원 닉네임을 변경한다.")
+    @PutMapping(value = "/user/change-nickname")
+    public ResponseEntity<CommonResult> changeNickname(
+            @ApiParam(value = "닉네임 변경 Dto", required = true) @RequestBody UserUpdateNicknameDto userUpdateNicknameDto,
+            @ApiIgnore Errors errors
+    ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        log.info("try change nickname : " + email);
+
+        if (errors.hasErrors()) {
+            throw new ApiParamNotValidException(errors);
+        }
+
+        userService.updateUserNickname(userUpdateNicknameDto, email);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 }
