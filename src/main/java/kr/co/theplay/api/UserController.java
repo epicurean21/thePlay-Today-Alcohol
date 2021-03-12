@@ -144,6 +144,13 @@ public class UserController {
             @ApiParam(value = "닉네임 변경 Dto", required = true) @RequestBody UserUpdateNicknameDto userUpdateNicknameDto,
             @ApiIgnore Errors errors
     ) {
+        /*
+        authentication 을 통해서 token 을 validation 한다.
+        Token 만료일자, Token을 분석해 사용자 존재여부 등을 분석한다
+        JWTTokenProvider 내에 구현되어있다.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        여기서 나온 authentication에서 getname을 하면 해당 사용자 토큰 내의 email을 얻을 수 있다.
+         */
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         log.info("try change nickname : " + email);
