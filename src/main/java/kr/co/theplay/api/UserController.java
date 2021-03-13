@@ -87,8 +87,7 @@ public class UserController {
         String password = signUpDto.getPassword();
         signUpDto.encodePassword(passwordEncoder.encode(password));
 
-        userService.signUp(signUpDto);
-        String token = userService.getSignInToken(signUpDto.getEmail());
+        String token = userService.SignUpGetToken(signUpDto);
         SingleResult<String> result = responseService.getSingleResult(token);
 
         return new ResponseEntity<>(result, HttpStatus.OK);

@@ -82,12 +82,36 @@ public class UserService {
         return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
     }
 
-    public String getSignInToken(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+    @Transactional
+    public String SignUpGetToken(SignUpDto signUpDto) {
+        User user = SignUpDtoMapper.INSTANCE.toEntity(signUpDto);
+
+        if (isEmailExists(signUpDto.getEmail()))
+            throw new CommonConflictException("userDuplication");
+        if (isNicknameExists(signUpDto.getNickname()))
+            throw new CommonConflictException("nicknameDuplication");
+
+        userRepository.save(user);
+        UserRole userRole = UserRole.builder().user(user).roleName("ROLE_USER").build();
+        userRoleRepository.save(userRole);
+
         List<String> roles = new ArrayList<>();
-        roles.add(user.getUserRole().getRoleName());
+        roles.add(userRole.getRoleName());
         return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
+    }
+
+    public boolean isEmailExists(String email) {
+        // 이메일 중복 확인
+        if (userRepository.findByEmail(email).isPresent())
+            return true;
+        return false;
+    }
+
+    public boolean isNicknameExists(String nickname) {
+        //닉네임 중복 확인
+        if (userRepository.findByNickname(nickname).isPresent())
+            return true;
+        return false;
     }
 
     @Transactional
