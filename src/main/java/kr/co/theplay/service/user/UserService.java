@@ -34,7 +34,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public void signUp(SignUpDto signUpDto) {
+    public String signUp(SignUpDto signUpDto) {
 
         User user = SignUpDtoMapper.INSTANCE.toEntity(signUpDto);
 
@@ -53,6 +53,10 @@ public class UserService {
         //Role 생성
         UserRole userRole = UserRole.builder().user(user).roleName("ROLE_USER").build();
         userRoleRepository.save(userRole);
+
+        List<String> roles = new ArrayList<>();
+        roles.add(userRole.getRoleName());
+        return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
     }
 
     @Transactional
@@ -69,7 +73,7 @@ public class UserService {
                 .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
 
         // 비밀번호 일치 여부 확인
-        if (!passwordEncoder.matches(signInDto.getPassword(), passwordEncoder.encode(user.getPassword()))) {
+        if (!passwordEncoder.matches(signInDto.getPassword(), user.getPassword())) {
             throw new CommonBadRequestException("passwordDenied");
         }
     }
@@ -80,38 +84,6 @@ public class UserService {
         List<String> roles = new ArrayList<>();
         roles.add(user.getUserRole().getRoleName());
         return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
-    }
-
-    @Transactional
-    public String SignUpGetToken(SignUpDto signUpDto) {
-        User user = SignUpDtoMapper.INSTANCE.toEntity(signUpDto);
-
-        if (isEmailExists(signUpDto.getEmail()))
-            throw new CommonConflictException("userDuplication");
-        if (isNicknameExists(signUpDto.getNickname()))
-            throw new CommonConflictException("nicknameDuplication");
-
-        userRepository.save(user);
-        UserRole userRole = UserRole.builder().user(user).roleName("ROLE_USER").build();
-        userRoleRepository.save(userRole);
-
-        List<String> roles = new ArrayList<>();
-        roles.add(userRole.getRoleName());
-        return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
-    }
-
-    public boolean isEmailExists(String email) {
-        // 이메일 중복 확인
-        if (userRepository.findByEmail(email).isPresent())
-            return true;
-        return false;
-    }
-
-    public boolean isNicknameExists(String nickname) {
-        //닉네임 중복 확인
-        if (userRepository.findByNickname(nickname).isPresent())
-            return true;
-        return false;
     }
 
     @Transactional

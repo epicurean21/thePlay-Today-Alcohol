@@ -38,9 +38,9 @@ public class UserController {
     private final UserRepository userRepository;
 
     //회원가입
-    @ApiOperation(value = "회원가입", notes = "회원가입을 한다.")
+    @ApiOperation(value = "회원가입", notes = "회원가입을 하고 토큰을 발급받는다.")
     @PostMapping("/sign-up")
-    public ResponseEntity<CommonResult> signUp(
+    public ResponseEntity<SingleResult<String>> signUp(
             @ApiParam(value = "회원가입용 Dto", required = true) @RequestBody @Valid SignUpDto signUpDto,
             @ApiIgnore Errors errors
     ) {
@@ -58,37 +58,11 @@ public class UserController {
         String password = signUpDto.getPassword();
         signUpDto.encodePassword(passwordEncoder.encode(password));
 
-        userService.signUp(signUpDto);
-
-        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
-    }
-
-/*    //회원가입 + 토큰 발급
-    @ApiOperation(value = "회원가입", notes = "회원가입을 한다.")
-    @PostMapping("/sign-up-with-token")
-    public ResponseEntity<SingleResult<String>> signUpWithToken(
-            @ApiParam(value = "회원가입용 Dto", required = true) @RequestBody @Valid SignUpDto signUpDto,
-            @ApiIgnore Errors errors
-    ) {
-        log.info("try login info : " + signUpDto.getEmail());
-
-        if (errors.hasErrors()) {
-            throw new ApiParamNotValidException(errors);
-        }
-
-        //valid를 통과했다면 password, confirmPassword 비교
-        if (!signUpDto.getPassword().equals(signUpDto.getConfirmPassword())) {
-            throw new CommonBadRequestException("passwordNotMatched");
-        }
-
-        String password = signUpDto.getPassword();
-        signUpDto.encodePassword(passwordEncoder.encode(password));
-
-        String token = userService.SignUpGetToken(signUpDto);
+        String token = userService.signUp(signUpDto);
         SingleResult<String> result = responseService.getSingleResult(token);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
-    }*/
+    }
 
 
     @ApiOperation(value = "로그인", notes = "로그인을 하고 Token을 받는다.")
@@ -117,18 +91,12 @@ public class UserController {
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "회원 닉네임 변경", notes = "회원 닉네임을 변경한다.")
-    @PutMapping(value = "/user/change-nickname")
+    @PutMapping(value = "/user/nickname")
     public ResponseEntity<CommonResult> changeNickname(
             @ApiParam(value = "닉네임 변경 Dto", required = true) @RequestBody UserUpdateNicknameDto userUpdateNicknameDto,
             @ApiIgnore Errors errors
     ) {
-        /*
-        authentication 을 통해서 token 을 validation 한다.
-        Token 만료일자, Token을 분석해 사용자 존재여부 등을 분석한다
-        JWTTokenProvider 내에 구현되어있다.
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        여기서 나온 authentication에서 getname을 하면 해당 사용자 토큰 내의 email을 얻을 수 있다.
-         */
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         log.info("try change nickname : " + email);
