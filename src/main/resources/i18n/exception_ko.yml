@@ -19,6 +19,10 @@ invalidTypeEmailOrPassword:
   code: "-1004"
   msg: "이메일 형식이나 비밀번호 형식이 옳지 않습니다."
 
+passwordDenied:
+  code: "-1005"
+  msg: "비밀번호를 다시 입력해주세요."
+
 imageNotFound:
   code: "-2000"
   msg: "존재하지 않는 이미지입니다."

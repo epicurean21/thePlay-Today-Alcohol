@@ -69,7 +69,7 @@ public class UserService {
                 .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
 
         // 비밀번호 일치 여부 확인
-        if (!passwordEncoder.matches(signInDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(signInDto.getPassword(), passwordEncoder.encode(user.getPassword()))) {
             throw new CommonBadRequestException("passwordDenied");
         }
     }
