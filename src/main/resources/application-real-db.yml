@@ -10,3 +10,26 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: todaysalcohol@gmail.com
+    password: aoboykczsohchjlf
+    protocol: smtp
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIAS5KQ3HNPX2AGCAMH
+      secretKey: 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
+    s3:
+      bucket: theplay
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
