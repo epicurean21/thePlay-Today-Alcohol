@@ -8,7 +8,6 @@ import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
-import kr.co.theplay.service.user.UserFindPasswordService;
 import kr.co.theplay.service.api.common.model.SingleResult;
 import kr.co.theplay.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +37,6 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
-    private final UserFindPasswordService userFindPasswordService;
-
     //회원가입
     @ApiOperation(value = "회원가입", notes = "회원가입을 한다.")
     @PostMapping("/sign-up")
@@ -66,7 +63,7 @@ public class UserController {
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 
-    //회원가입 + 토큰 발급
+/*    //회원가입 + 토큰 발급
     @ApiOperation(value = "회원가입", notes = "회원가입을 한다.")
     @PostMapping("/sign-up-with-token")
     public ResponseEntity<SingleResult<String>> signUpWithToken(
@@ -91,26 +88,8 @@ public class UserController {
         SingleResult<String> result = responseService.getSingleResult(token);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+    }*/
 
-    @ApiOperation(value = "비밀번호 찾기", notes = "비밀번호 찾기 이메일 전송.")
-    @PostMapping(value = "/find-password")
-    public ResponseEntity<CommonResult> findPassword(
-            @ApiParam(value = "비밀번호 찾기 이메일 Dto", required = true) @RequestBody UserFindPasswordDto userFindPasswordDto,
-            @ApiIgnore Errors errors
-    ) {
-        log.info("try find password info : " + userFindPasswordDto.getEmail());
-
-        if (errors.hasErrors()) {
-            throw new ApiParamNotValidException(errors);
-        }
-
-        UserSendEmailDto userSendEmailDto = userFindPasswordService.createMailAndChangePassword(userFindPasswordDto.getEmail());
-        userFindPasswordService.sendEmail(userSendEmailDto);
-
-        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
-
-    }
 
     @ApiOperation(value = "로그인", notes = "로그인을 하고 Token을 받는다.")
     @PostMapping(value = "/sign-in")
