@@ -32,7 +32,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false, length = 50)
     private String nickname;
 
-    @ColumnDefault("N")
+    @Column
     private String privacyYn;
 
     @OneToOne(mappedBy = "user")
