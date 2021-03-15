@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,6 +15,7 @@ import java.util.Collection;
 
 @Getter
 @Entity
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity implements UserDetails {
 
@@ -29,7 +32,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false, length = 50)
     private String nickname;
 
-    @Column(nullable = false, columnDefinition = "N", length = 1)
+    @ColumnDefault("N")
     private String privacyYn;
 
     @OneToOne(mappedBy = "user")
