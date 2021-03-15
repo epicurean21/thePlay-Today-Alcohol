@@ -44,7 +44,7 @@ public class UserController {
             @ApiParam(value = "회원가입용 Dto", required = true) @RequestBody @Valid SignUpDto signUpDto,
             @ApiIgnore Errors errors
     ) {
-        log.info("try login info : " + signUpDto.getEmail());
+//        log.info("try login info : " + signUpDto.getEmail());
 
         if (errors.hasErrors()) {
             throw new ApiParamNotValidException(errors);
@@ -71,7 +71,7 @@ public class UserController {
             @ApiParam(value = "로그인 Dto", required = true) @RequestBody SignInDto signInDto,
             @ApiIgnore Errors errors
     ) {
-        log.info("try sign in info : " + signInDto.getEmail());
+//        log.info("try sign in info : " + signInDto.getEmail());
 
         if (errors.hasErrors()) {
             throw new ApiParamNotValidException(errors);
@@ -99,7 +99,7 @@ public class UserController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        log.info("try change nickname : " + email);
+//        log.info("try change nickname : " + email);
 
         if (errors.hasErrors()) {
             throw new ApiParamNotValidException(errors);
