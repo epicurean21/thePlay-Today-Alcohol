@@ -47,7 +47,7 @@ public class S3Service {
                 .build();
     }
 
-    public String upload(String currentFilePath, MultipartFile file) throws IOException {
+    public String upload(MultipartFile file) throws IOException {
         // AWS S3 서버에 업로드
 
         // 이미지 크기가 너무 크다면 에러

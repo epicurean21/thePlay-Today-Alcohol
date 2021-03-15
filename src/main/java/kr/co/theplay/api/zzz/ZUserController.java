@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kr.co.theplay.dto.images.ImageUploadDto;
+import kr.co.theplay.dto.images.ImageUploadToS3Dto;
 import kr.co.theplay.dto.zzz.ZUserReqDto;
 import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
@@ -54,12 +55,12 @@ public class ZUserController {
     @ApiOperation(value = "이미지 업로드", notes = "사진을 업로드한다.")
     @PostMapping(value = "/upload")
     public ResponseEntity<CommonResult> uploadImages(
-            @ApiParam(value = "이미지 업로드 Dto", required = true)
-                    ImageUploadDto imageUploadDto, MultipartFile[] file,
+            @ApiParam(value = "이미지 업로드 파일", required = true)
+                    ImageUploadToS3Dto imageUploadToS3Dto,
             @ApiIgnore Errors errors
     ) throws Exception {
 
-        log.info("try upload info: : " + imageUploadDto.getFilePath());
+        log.info("try upload info: : FILE UPLOAD");
 
         if (errors.hasErrors()) {
             throw new ApiParamNotValidException(errors);
@@ -72,8 +73,9 @@ public class ZUserController {
         게시글 업로드시에는 밑에 로직을 추가하여 사진을 업로드하면 된다.
          */
 
-        for (int i = 0; i < file.length; i++) {
-            String imagePath = s3Service.upload(imageUploadDto.getFilePath(), file[i]);
+        ImageUploadDto imageUploadDto = new ImageUploadDto();
+        for (int i = 0; i < imageUploadToS3Dto.getFile().length; i++) {
+            String imagePath = s3Service.upload(imageUploadToS3Dto.getFile()[i]);
             if (imagePath == "EXCEED") { // 업로드 하는 이미지 파일 크기
                 throw new CommonBadRequestException("imageSizeExcessLimit");
             }
