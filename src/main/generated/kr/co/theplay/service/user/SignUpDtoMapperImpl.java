@@ -7,7 +7,7 @@ import kr.co.theplay.dto.user.SignUpDto;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-03-13T15:13:28+0900",
+    date = "2021-03-15T16:50:43+0900",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 1.8.0_191-1-ojdkbuild (Oracle Corporation)"
 )
 public class SignUpDtoMapperImpl implements SignUpDtoMapper {
@@ -27,9 +27,10 @@ public class SignUpDtoMapperImpl implements SignUpDtoMapper {
         nickname = dto.getNickname();
 
         Long id = null;
+        String privacyYn = null;
         UserRole userRole = null;
 
-        User user = new User( id, email, password, nickname, userRole );
+        User user = new User( id, email, password, nickname, privacyYn, userRole );
 
         return user;
     }

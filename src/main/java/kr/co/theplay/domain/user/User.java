@@ -20,21 +20,29 @@ public class User extends BaseTimeEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String email;
 
+    @Column(nullable = false, length = 100)
     private String password;
 
+    @Column(nullable = false, length = 50)
     private String nickname;
+
+    @Column(nullable = false, columnDefinition = "N", length = 1)
+    private String privacyYn;
 
     @OneToOne(mappedBy = "user")
     private UserRole userRole;
 
     @Builder
-    public User(Long id, String email, String password, String nickname, UserRole userRole) {
+    public User(Long id, String email, String password, String nickname,
+                String privacyYn, UserRole userRole) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.privacyYn = privacyYn;
         this.userRole = userRole;
     }
 
