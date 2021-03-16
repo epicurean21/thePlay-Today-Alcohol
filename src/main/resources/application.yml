@@ -8,7 +8,9 @@ spring:
   jpa:
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-
+    properties:
+      hibernate:
+        format_sql: true
   h2:
     console:
       enabled: true
