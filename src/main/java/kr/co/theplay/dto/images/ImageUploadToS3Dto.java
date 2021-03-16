@@ -1,7 +1,6 @@
 package kr.co.theplay.dto.images;
 
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.theplay.domain.images.Image;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 

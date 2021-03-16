@@ -108,4 +108,18 @@ public class UserController {
         userService.updateUserNickname(userUpdateNicknameDto, email);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "비밀번호 찾기", notes = "비밀번호 찾기 이메일 전송")
+    @PostMapping(value = "/user/password")
+    public ResponseEntity<CommonResult> findPassword(
+            @ApiParam(value = "비밀번호 찾기 이메일 Dto", required = true) @RequestBody UserFindPasswordDto userFindPasswordDto,
+            @ApiIgnore Errors errors
+    ) {
+        if (errors.hasErrors())
+            throw new ApiParamNotValidException(errors);
+
+        UserSendEmailDto userSendEmailDto = userService.createMailAndChangePassword(userFindPasswordDto.getEmail());
+        userService.sendEmail(userSendEmailDto);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
 }
