@@ -145,6 +145,9 @@ public class UserService {
         mailSender.send(message);
     }
 
-    public void changePrivacyYn() {
+    @Transactional
+    public void changePrivacyYn(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        user.changePrivacyYn();
     }
 }

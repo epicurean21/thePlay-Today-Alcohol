@@ -100,7 +100,6 @@ public class UserController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-//        log.info("try change nickname : " + email);
 
         if(email.equals("anonymousUser")){
             throw new CommonConflictException("accessException");
@@ -133,7 +132,15 @@ public class UserController {
     @ApiOperation(value = "회원 계정 비공개 여부 변경", notes = "회원 계정의 비공개 여부를 변경한다.")
     @PutMapping(value = "/user/show-yn")
     public ResponseEntity<CommonResult> changePrivacyYn(){
-        userService.changePrivacyYn();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if(email.equals("anonymousUser")){
+            throw new CommonConflictException("accessException");
+        }
+
+        userService.changePrivacyYn(email);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 }
