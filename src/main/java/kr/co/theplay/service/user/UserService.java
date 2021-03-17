@@ -5,10 +5,7 @@ import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.domain.user.UserRole;
 import kr.co.theplay.domain.user.UserRoleRepository;
-import kr.co.theplay.dto.user.SignInDto;
-import kr.co.theplay.dto.user.SignUpDto;
-import kr.co.theplay.dto.user.UserSendEmailDto;
-import kr.co.theplay.dto.user.UserUpdateNicknameDto;
+import kr.co.theplay.dto.user.*;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
@@ -149,5 +146,10 @@ public class UserService {
     public void changePrivacyYn(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         user.changePrivacyYn();
+    }
+
+    @Transactional
+    public void changePassword(UserChangePasswordDto userChangePasswordDto, String email) {
+        updateUserPassword(email, userChangePasswordDto.getPassword());
     }
 }
