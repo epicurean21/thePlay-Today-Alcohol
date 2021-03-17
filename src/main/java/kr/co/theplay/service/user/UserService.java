@@ -144,4 +144,7 @@ public class UserService {
         message.setText(userSendEmailDto.getMessage());
         mailSender.send(message);
     }
+
+    public void changePrivacyYn() {
+    }
 }

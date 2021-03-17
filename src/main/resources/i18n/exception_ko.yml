@@ -23,6 +23,10 @@ passwordDenied:
   code: "-1005"
   msg: "비밀번호를 다시 입력해주세요."
 
+accessException:
+  code: "-1006"
+  msg : "접근 권한이 없습니다."
+
 imageNotFound:
   code: "-2000"
   msg: "존재하지 않는 이미지입니다."

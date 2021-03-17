@@ -6,6 +6,7 @@ import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.user.*;
 import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
+import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
 import kr.co.theplay.service.api.common.model.SingleResult;
@@ -101,6 +102,9 @@ public class UserController {
         String email = authentication.getName();
 //        log.info("try change nickname : " + email);
 
+        if(email.equals("anonymousUser")){
+            throw new CommonConflictException("accessException");
+        }
         if (errors.hasErrors()) {
             throw new ApiParamNotValidException(errors);
         }
@@ -120,6 +124,16 @@ public class UserController {
 
         UserSendEmailDto userSendEmailDto = userService.createMailAndChangePassword(userFindPasswordDto.getEmail());
         userService.sendEmail(userSendEmailDto);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "회원 계정 비공개 여부 변경", notes = "회원 계정의 비공개 여부를 변경한다.")
+    @PutMapping(value = "/user/show-yn")
+    public ResponseEntity<CommonResult> changePrivacyYn(){
+        userService.changePrivacyYn();
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 }
