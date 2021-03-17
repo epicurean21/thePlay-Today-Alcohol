@@ -33,10 +33,7 @@ public class UserController {
 
     private final UserService userService;
     private final ResponseService responseService;
-
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
 
     //회원가입
     @ApiOperation(value = "회원가입", notes = "회원가입을 하고 토큰을 발급받는다.")

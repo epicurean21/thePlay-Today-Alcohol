@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Entity
@@ -32,21 +33,18 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false, length = 50)
     private String nickname;
 
+
     @Column
     private String privacyYn;
 
-    @OneToOne(mappedBy = "user")
-    private UserRole userRole;
-
     @Builder
     public User(Long id, String email, String password, String nickname,
-                String privacyYn, UserRole userRole) {
+                String privacyYn) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.privacyYn = privacyYn;
-        this.userRole = userRole;
     }
 
     public void changePrivacyYn(){

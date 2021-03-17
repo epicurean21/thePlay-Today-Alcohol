@@ -2,7 +2,7 @@ package kr.co.theplay.service.zzz;
 
 import kr.co.theplay.domain.images.Image;
 import kr.co.theplay.domain.images.ImageRepository;
-import kr.co.theplay.dto.images.ImageUploadDto;
+import kr.co.theplay.dto.zzz.ImageUploadDto;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

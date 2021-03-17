@@ -3,8 +3,8 @@ package kr.co.theplay.api.zzz;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import kr.co.theplay.dto.images.ImageUploadDto;
-import kr.co.theplay.dto.images.ImageUploadToS3Dto;
+import kr.co.theplay.dto.zzz.ImageUploadDto;
+import kr.co.theplay.dto.zzz.ImageUploadToS3Dto;
 import kr.co.theplay.dto.zzz.ZUserReqDto;
 import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Api(tags = {"999. ZZZ (예시 API)"})

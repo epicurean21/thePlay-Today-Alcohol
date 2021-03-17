@@ -1,4 +1,4 @@
-package kr.co.theplay.dto.images;
+package kr.co.theplay.dto.zzz;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;

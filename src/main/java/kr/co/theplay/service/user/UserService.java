@@ -88,7 +88,7 @@ public class UserService {
         User user = userRepository.findByEmail(signInDto.getEmail())
                 .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         List<String> roles = new ArrayList<>();
-        roles.add(user.getUserRole().getRoleName());
+        roles.add("ROLE_USER");
         return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
     }
 
