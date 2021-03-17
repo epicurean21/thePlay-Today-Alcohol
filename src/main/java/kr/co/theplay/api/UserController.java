@@ -98,7 +98,7 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        if(email.equals("anonymousUser")){
+        if (email.equals("anonymousUser")) {
             throw new CommonConflictException("accessException");
         }
         if (errors.hasErrors()) {
@@ -128,16 +128,46 @@ public class UserController {
     })
     @ApiOperation(value = "회원 계정 비공개 여부 변경", notes = "회원 계정의 비공개 여부를 변경한다.")
     @PutMapping(value = "/user/show-yn")
-    public ResponseEntity<CommonResult> changePrivacyYn(){
+    public ResponseEntity<CommonResult> changePrivacyYn() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        if(email.equals("anonymousUser")){
+        if (email.equals("anonymousUser")) {
             throw new CommonConflictException("accessException");
         }
 
         userService.changePrivacyYn(email);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "회원 비밀번호 변경", notes = "회원 계정의 비밀번호를 변경한다")
+    @PutMapping(value = "/user/password")
+    public ResponseEntity<CommonResult> changePassword(
+            @ApiParam(value = "비밀번호 변경 Dto", required = true) @RequestBody @Valid UserChangePasswordDto userChangePasswordDto,
+            @ApiIgnore Errors errors
+    ) {
+        if (errors.hasErrors()) {
+            throw new ApiParamNotValidException(errors);
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        //valid를 통과했다면 password, confirmPassword 비교
+        if (!userChangePasswordDto.getPassword().equals(userChangePasswordDto.getConfirmPassword())) {
+            throw new CommonBadRequestException("passwordNotMatched");
+        }
+
+        userService.changePassword(userChangePasswordDto, email);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
 }

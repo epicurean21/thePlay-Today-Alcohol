@@ -2,11 +2,12 @@ package kr.co.theplay.service.user;
 
 import javax.annotation.Generated;
 import kr.co.theplay.domain.user.User;
+import kr.co.theplay.domain.user.UserRole;
 import kr.co.theplay.dto.user.SignUpDto;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-03-17T23:07:39+0900",
+    date = "2021-03-17T17:08:09+0900",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 1.8.0_191-1-ojdkbuild (Oracle Corporation)"
 )
 public class SignUpDtoMapperImpl implements SignUpDtoMapper {
@@ -27,8 +28,9 @@ public class SignUpDtoMapperImpl implements SignUpDtoMapper {
 
         Long id = null;
         String privacyYn = null;
+        UserRole userRole = null;
 
-        User user = new User( id, email, password, nickname, privacyYn );
+        User user = new User( id, email, password, nickname, privacyYn, userRole );
 
         return user;
     }
