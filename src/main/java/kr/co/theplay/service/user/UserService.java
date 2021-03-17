@@ -150,6 +150,10 @@ public class UserService {
 
     @Transactional
     public void changePassword(UserChangePasswordDto userChangePasswordDto, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        if (passwordEncoder.matches(userChangePasswordDto.getPassword(), user.getPassword())) {
+            throw new CommonConflictException("passwordDuplication");
+        }
         updateUserPassword(email, userChangePasswordDto.getPassword());
     }
 }
