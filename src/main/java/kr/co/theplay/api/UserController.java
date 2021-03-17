@@ -150,7 +150,7 @@ public class UserController {
     @ApiOperation(value = "회원 비밀번호 변경", notes = "회원 계정의 비밀번호를 변경한다")
     @PutMapping(value = "/user/password")
     public ResponseEntity<CommonResult> changePassword(
-            @ApiParam(value = "비밀번호 변경 Dto", required = true) @RequestBody UserChangePasswordDto userChangePasswordDto,
+            @ApiParam(value = "비밀번호 변경 Dto", required = true) @RequestBody @Valid UserChangePasswordDto userChangePasswordDto,
             @ApiIgnore Errors errors
     ) {
         if (errors.hasErrors()) {
