@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class UserUpdateNicknameDto {
+public class UserChangeNicknameDto {
     @ApiModelProperty(value = "닉네임", dataType = "String", required = true, example = "오늘 한 주")
     private String nickname;
 
     @Builder
-    public UserUpdateNicknameDto(String nickname) {
+    public UserChangeNicknameDto(String nickname) {
         this.nickname = nickname;
     }
 }

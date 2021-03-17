@@ -1,8 +1,6 @@
 package kr.co.theplay.api;
 
 import io.swagger.annotations.*;
-import kr.co.theplay.api.config.security.JwtTokenProvider;
-import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.user.*;
 import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
@@ -91,7 +89,7 @@ public class UserController {
     @ApiOperation(value = "회원 닉네임 변경", notes = "회원 닉네임을 변경한다.")
     @PutMapping(value = "/user/nickname")
     public ResponseEntity<CommonResult> changeNickname(
-            @ApiParam(value = "닉네임 변경 Dto", required = true) @RequestBody UserUpdateNicknameDto userUpdateNicknameDto,
+            @ApiParam(value = "닉네임 변경 Dto", required = true) @RequestBody UserChangeNicknameDto userChangeNicknameDto,
             @ApiIgnore Errors errors
     ) {
 
@@ -105,7 +103,7 @@ public class UserController {
             throw new ApiParamNotValidException(errors);
         }
 
-        userService.updateUserNickname(userUpdateNicknameDto, email);
+        userService.updateUserNickname(userChangeNicknameDto, email);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 
@@ -161,13 +159,12 @@ public class UserController {
             throw new CommonConflictException("accessException");
         }
 
-        //valid를 통과했다면 password, confirmPassword 비교
-        if (!userChangePasswordDto.getPassword().equals(userChangePasswordDto.getConfirmPassword())) {
-            throw new CommonBadRequestException("passwordNotMatched");
-        }
-
         userService.changePassword(userChangePasswordDto, email);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 
+    /*@ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "회원 설정 화면", notes = "회원")*/
 }

@@ -10,17 +10,14 @@ import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -90,15 +87,15 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserNickname(UserUpdateNicknameDto userUpdateNicknameDto, String email) {
+    public void updateUserNickname(UserChangeNicknameDto userChangeNicknameDto, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CommonNotFoundException("userNotFound"));
 
-        if (userRepository.findByNickname(userUpdateNicknameDto.getNickname()).isPresent()) {
+        if (userRepository.findByNickname(userChangeNicknameDto.getNickname()).isPresent()) {
             throw new CommonConflictException("nicknameDuplication");
         }
 
-        user.updateUserNickname(userUpdateNicknameDto.getNickname());
+        user.updateUserNickname(userChangeNicknameDto.getNickname());
         userRepository.save(user);
     }
 
@@ -151,9 +148,22 @@ public class UserService {
     @Transactional
     public void changePassword(UserChangePasswordDto userChangePasswordDto, String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-        if (passwordEncoder.matches(userChangePasswordDto.getPassword(), user.getPassword())) {
+
+        // 비밀번호 입력 오류
+        if (!passwordEncoder.matches(userChangePasswordDto.getPassword(), user.getPassword())) {
+            throw new CommonConflictException("passwordDenied");
+        }
+
+        //valid를 통과했다면 newPassword, confirmPassword 비교
+        if (!userChangePasswordDto.getNewPassword().equals(userChangePasswordDto.getConfirmPassword())) {
+            throw new CommonBadRequestException("passwordNotMatched");
+        }
+
+        // 이전 비밀번호와 중복인지
+        if (passwordEncoder.matches(userChangePasswordDto.getNewPassword(), user.getPassword())) {
             throw new CommonConflictException("passwordDuplication");
         }
-        updateUserPassword(email, userChangePasswordDto.getPassword());
+
+        updateUserPassword(email, userChangePasswordDto.getNewPassword());
     }
 }
