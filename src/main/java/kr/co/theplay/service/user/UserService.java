@@ -10,6 +10,7 @@ import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -165,5 +166,16 @@ public class UserService {
         }
 
         updateUserPassword(email, userChangePasswordDto.getNewPassword());
+    }
+
+    public UserSettingsDto getUserSettings(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        /*UserSettingsDto userSettingsDto = UserSettingsDto
+                .builder()
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .build();*/
+        UserSettingsDto userSettingsDto = UserSettingsDtoMapper.INSTANCE.toDto(user);
+        return userSettingsDto;
     }
 }

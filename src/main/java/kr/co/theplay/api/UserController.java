@@ -1,13 +1,18 @@
 package kr.co.theplay.api;
 
 import io.swagger.annotations.*;
+import kr.co.theplay.domain.notice.Notice;
+import kr.co.theplay.dto.notice.NoticeListDto;
+import kr.co.theplay.dto.notice.NoticeSingleDto;
 import kr.co.theplay.dto.user.*;
 import kr.co.theplay.service.api.advice.exception.ApiParamNotValidException;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
+import kr.co.theplay.service.api.common.model.ListResult;
 import kr.co.theplay.service.api.common.model.SingleResult;
+import kr.co.theplay.service.notice.NoticeService;
 import kr.co.theplay.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Api(tags = {"101. User (회원인증 및 회원정보)"})
 @RequestMapping(value = "/v1")
@@ -32,6 +38,7 @@ public class UserController {
     private final UserService userService;
     private final ResponseService responseService;
     private final PasswordEncoder passwordEncoder;
+    private final NoticeService noticeService;
 
     //회원가입
     @ApiOperation(value = "회원가입", notes = "회원가입을 하고 토큰을 발급받는다.")
@@ -163,8 +170,56 @@ public class UserController {
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 
-    /*@ApiImplicitParams({
+    @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
-    @ApiOperation(value = "회원 설정 화면", notes = "회원")*/
+    @ApiOperation(value = "개인 정보 수정", notes = "개인 정보 수정 화면")
+    @GetMapping(value = "/user/settings")
+    public ResponseEntity<SingleResult<UserSettingsDto>> userSettings() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+        UserSettingsDto userSettingsDto = userService.getUserSettings(email);
+        SingleResult<UserSettingsDto> result = responseService.getSingleResult(userSettingsDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "공지사항 목록 조회", notes = "공지사항 목록 조회")
+    @GetMapping(value = "/user/notices")
+    public ResponseEntity<ListResult<NoticeListDto>> getNoticeList() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        List<NoticeListDto> noticeListDto = noticeService.getNoticeList();
+        ListResult<NoticeListDto> result = responseService.getListResult(noticeListDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "공지사항 단건 조회", notes = "공지사항 단건 조회")
+    @GetMapping(value = "/user/notice/{noticeId}")
+    public ResponseEntity<SingleResult<NoticeSingleDto>> getNoticeSingle(@PathVariable Long noticeId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        NoticeSingleDto noticeSingleDto = noticeService.getNoticeSingle(noticeId);
+        SingleResult<NoticeSingleDto> result = responseService.getSingleResult(noticeSingleDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
