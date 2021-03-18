@@ -170,12 +170,12 @@ public class UserService {
 
     public UserSettingsDto getUserSettings(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-        /*UserSettingsDto userSettingsDto = UserSettingsDto
+        UserSettingsDto userSettingsDto = UserSettingsDto
                 .builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .build();*/
-        UserSettingsDto userSettingsDto = UserSettingsDtoMapper.INSTANCE.toDto(user);
+                .build();
+        //UserSettingsDto userSettingsDto = UserSettingsDtoMapper.INSTANCE.toDto(user);
         return userSettingsDto;
     }
 }
