@@ -5,6 +5,7 @@ import kr.co.theplay.domain.follow.FollowRepository;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.follow.FollowUserDto;
+import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,11 @@ public class FollowService {
             throw new CommonNotFoundException("followedUserNotFound");
         }
         User followedUser = userRepository.findById(userId).orElseThrow(() -> new CommonNotFoundException("followedUserNotFound"));
+        
+        //이미 팔로우 관계가 존재하는 경우
+        if(followRepository.findByUserAndUserFollow(user, followedUser).isPresent()){
+            throw new CommonConflictException("followConflict");
+        }
 
         Follow follow = Follow.builder().user(user).userFollow(followedUser).build();
         followRepository.save(follow);
