@@ -56,7 +56,7 @@ public class UserService {
         userRoleRepository.save(userRole);
 
         List<String> roles = new ArrayList<>();
-        roles.add(userRole.getRoleName());
+        roles.add("ROLE_USER");
         return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
     }
 
