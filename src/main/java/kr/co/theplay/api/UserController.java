@@ -174,7 +174,7 @@ public class UserController {
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "개인 정보 수정", notes = "개인 정보 수정 화면")
-    @GetMapping(value = "/user/settings")
+    @GetMapping(value = "/user/setting")
     public ResponseEntity<SingleResult<UserSettingsDto>> userSettings() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -191,7 +191,7 @@ public class UserController {
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "공지사항 목록 조회", notes = "공지사항 목록 조회")
-    @GetMapping(value = "/user/notices")
+    @GetMapping(value = "/user/notice")
     public ResponseEntity<ListResult<NoticeListDto>> getNoticeList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
