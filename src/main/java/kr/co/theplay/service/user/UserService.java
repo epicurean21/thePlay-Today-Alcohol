@@ -37,7 +37,13 @@ public class UserService {
     @Transactional
     public String signUp(SignUpDto signUpDto) {
 
-        User user = SignUpDtoMapper.INSTANCE.toEntity(signUpDto);
+//        User user = SignUpDtoMapper.INSTANCE.toEntity(signUpDto);
+
+        User user = User.builder()
+                .email(signUpDto.getEmail())
+                .password(signUpDto.getPassword())
+                .nickname(signUpDto.getNickname())
+                .build();
 
         //이미 가입한 회원인지 email 확인
         if (userRepository.findByEmail(signUpDto.getEmail()).isPresent()) {
