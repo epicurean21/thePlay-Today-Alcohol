@@ -33,7 +33,6 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false, length = 50)
     private String nickname;
 
-
     @Column
     private String privacyYn;
 

@@ -37,7 +37,13 @@ public class UserService {
     @Transactional
     public String signUp(SignUpDto signUpDto) {
 
-        User user = SignUpDtoMapper.INSTANCE.toEntity(signUpDto);
+//        User user = SignUpDtoMapper.INSTANCE.toEntity(signUpDto);
+
+        User user = User.builder()
+                .email(signUpDto.getEmail())
+                .password(signUpDto.getPassword())
+                .nickname(signUpDto.getNickname())
+                .build();
 
         //이미 가입한 회원인지 email 확인
         if (userRepository.findByEmail(signUpDto.getEmail()).isPresent()) {
@@ -56,7 +62,7 @@ public class UserService {
         userRoleRepository.save(userRole);
 
         List<String> roles = new ArrayList<>();
-        roles.add(userRole.getRoleName());
+        roles.add("ROLE_USER");
         return jwtTokenProvider.createToken(String.valueOf(user.getId()), roles);
     }
 
@@ -170,12 +176,12 @@ public class UserService {
 
     public UserSettingsDto getUserSettings(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-        /*UserSettingsDto userSettingsDto = UserSettingsDto
+        UserSettingsDto userSettingsDto = UserSettingsDto
                 .builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .build();*/
-        UserSettingsDto userSettingsDto = UserSettingsDtoMapper.INSTANCE.toDto(user);
+                .build();
+        //UserSettingsDto userSettingsDto = UserSettingsDtoMapper.INSTANCE.toDto(user);
         return userSettingsDto;
     }
 }

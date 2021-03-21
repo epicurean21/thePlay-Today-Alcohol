@@ -46,3 +46,7 @@ imageSizeExcessLimit:
 followedUserNotFound:
   code: "-3000"
   msg: "팔로우 하려는 사용자가 존재하지 않습니다."
+
+followConflict:
+  code: "-3001"
+  msg: "이미 팔로우 중인 사용자입니다."
