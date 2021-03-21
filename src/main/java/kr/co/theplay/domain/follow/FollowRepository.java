@@ -17,4 +17,14 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     @Query("select f from Follow f where f.user.email = :email")
     List<Follow> findFollowingsByUser(@Param("email") String email);
 
+    /*
+    attributePaths가 가져오고자 하는 Entity.. userFollow인지 user인지
+
+    나를 팔로잉 하는 사람들을 가져오는 것 이기에, user->userFollow의 user 객체들을 가져와야한다.
+    Follow table의 userFollow가 로그인한 사람 (email)
+     */
+    @EntityGraph(attributePaths = {"user"})
+    @Query("select f from Follow f where f.userFollow.email = :email")
+    List<Follow> findFollowersByUser(@Param("email") String email);
+
 }

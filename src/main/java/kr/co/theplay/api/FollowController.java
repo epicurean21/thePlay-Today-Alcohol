@@ -36,12 +36,12 @@ public class FollowController {
     })
     @ApiOperation(value = "팔로우하기", notes = "특정 회원을 팔로우한다.")
     @PostMapping(value = "/user/following/{userId}")
-    public ResponseEntity<CommonResult> followUser(@PathVariable Long userId){
+    public ResponseEntity<CommonResult> followUser(@PathVariable Long userId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        if(email.equals("anonymousUser")){
+        if (email.equals("anonymousUser")) {
             throw new CommonConflictException("accessException");
         }
 
@@ -53,13 +53,13 @@ public class FollowController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
-    @ApiOperation(value = "팔로우 조회", notes = "로그인한 회원이 팔로우하는 회원 목록을 조회한다.")
+    @ApiOperation(value = "팔로잉 목록 조회", notes = "로그인한 회원이 팔로잉하는 회원 목록을 조회한다.")
     @GetMapping(value = "/user/followings")
-    public ResponseEntity<ListResult<FollowUserDto>> getFollowings(){
+    public ResponseEntity<ListResult<FollowUserDto>> getFollowings() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        if(email.equals("anonymousUser")){
+        if (email.equals("anonymousUser")) {
             throw new CommonConflictException("accessException");
         }
 
@@ -69,4 +69,21 @@ public class FollowController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "팔오워 목록 조회", notes = "로그인한 회원의 팔로워 목록을 조회한다")
+    @GetMapping(value = "/user/followers")
+    public ResponseEntity<ListResult<FollowUserDto>> getFollowers() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+        List<FollowUserDto> followUserDtos = followService.getFollowers(email);
+        ListResult<FollowUserDto> result = responseService.getListResult(followUserDtos);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

@@ -26,7 +26,7 @@ public class FollowService {
     public void followUser(String email, Long userId) {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-        if(userId == user.getId()){
+        if (userId == user.getId()) {
             //본인을 팔로우하려는 경우
             throw new CommonNotFoundException("followedUserNotFound");
         }
@@ -36,7 +36,7 @@ public class FollowService {
         followRepository.save(follow);
     }
 
-    public List<FollowUserDto> getFollowings(String email){
+    public List<FollowUserDto> getFollowings(String email) {
 
         List<Follow> follows = followRepository.findFollowingsByUser(email);
 
@@ -45,6 +45,18 @@ public class FollowService {
                 FollowUserDto.builder().id(f.getUserFollow().getId()).nickname(f.getUserFollow().getNickname()).build()
         ));
 
+        return followUserDtos;
+    }
+
+    public List<FollowUserDto> getFollowers(String email) {
+        List<Follow> follows = followRepository.findFollowersByUser(email);
+        List<FollowUserDto> followUserDtos = new ArrayList<>();
+        follows.forEach(f -> followUserDtos.add(
+                FollowUserDto.builder()
+                        .id(f.getUser().getId())
+                        .nickname(f.getUser().getNickname())
+                        .build()
+        ));
         return followUserDtos;
     }
 }
