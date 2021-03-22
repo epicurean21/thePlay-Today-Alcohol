@@ -99,10 +99,9 @@ public class FollowService {
 
     @Transactional
     public void blockFollower(String email, Long id) {
-        deleteFollowing(email, id);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         User userBlock = userRepository.findById(id).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-
+        deleteFollowing(user.getEmail(), userBlock.getId());
         if (blockRepository.findByUserAndUserBlock(user, userBlock).isPresent()) {
             throw new CommonConflictException("blockConflict");
         }
