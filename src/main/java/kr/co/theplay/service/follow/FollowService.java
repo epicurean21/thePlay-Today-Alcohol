@@ -107,6 +107,6 @@ public class FollowService {
 
         Block block = Block.builder().user(user).userBlock(userBlock).build();
         blockRepository.save(block);
-        deleteFollowing(user.getEmail(), userBlock.getId());
+        deleteFollower(user.getEmail(), userBlock.getId());
     }
 }
