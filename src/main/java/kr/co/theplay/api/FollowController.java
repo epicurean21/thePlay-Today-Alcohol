@@ -86,4 +86,60 @@ public class FollowController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "팔로워 삭제", notes = "회원의 팔로워를 삭제한다")
+    @DeleteMapping(value = "/user/followers/{userId}")
+    public ResponseEntity<CommonResult> deleteFollower(@PathVariable Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        followService.deleteFollower(email, userId);
+
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "팔로잉 취소", notes = "팔로잉을 취소한다")
+    @DeleteMapping(value = "/user/followings/{userId}")
+    public ResponseEntity<CommonResult> deleteFollowing(@PathVariable Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        followService.deleteFollowing(email, userId);
+
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "팔로워 차단", notes = "팔로워를 차단한다")
+    @PostMapping(value = "/user/followers/block/{userId}")
+    public ResponseEntity<CommonResult> blockFollower(@PathVariable Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        // 팔로잉 삭제
+        followService.blockFollower(email, userId);
+
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
 }
