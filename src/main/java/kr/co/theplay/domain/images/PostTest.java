@@ -1,5 +1,6 @@
 package kr.co.theplay.domain.images;
 
+import com.sun.xml.bind.v2.model.core.ReferencePropertyInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,26 +11,22 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class Image {
+public class PostTest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private Long postTestId;
+    private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String filePath;
+    @Column
+    private String thumbnailPath;
 
     @Builder
-    public Image(Long id, Long postTestId, String filePath) {
+    public PostTest(Long id, String title, String thumbnailPath){
         this.id = id;
-        this.postTestId = postTestId;
-        this.filePath = filePath;
-    }
-
-    public void changeFilePath(String filePath){
-        this.filePath = filePath;
+        this.title = title;
+        this.thumbnailPath = thumbnailPath;
     }
 }
