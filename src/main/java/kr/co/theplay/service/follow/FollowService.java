@@ -101,12 +101,12 @@ public class FollowService {
     public void blockFollower(String email, Long id) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         User userBlock = userRepository.findById(id).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-        deleteFollowing(user.getEmail(), userBlock.getId());
         if (blockRepository.findByUserAndUserBlock(user, userBlock).isPresent()) {
             throw new CommonConflictException("blockConflict");
         }
 
         Block block = Block.builder().user(user).userBlock(userBlock).build();
         blockRepository.save(block);
+        deleteFollowing(user.getEmail(), userBlock.getId());
     }
 }
