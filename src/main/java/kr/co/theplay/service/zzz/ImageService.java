@@ -6,7 +6,9 @@ import kr.co.theplay.domain.images.PostTest;
 import kr.co.theplay.domain.images.PostTestRepository;
 import kr.co.theplay.dto.zzz.ImageUploadDto;
 import kr.co.theplay.dto.zzz.ImageUploadToS3Dto;
+import kr.co.theplay.dto.zzz.PostDto;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
+import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +63,7 @@ public class ImageService {
         SimpleDateFormat date = new SimpleDateFormat("yyyymmddHHmmsss");
         String thumbnailPath = files.get(0).getOriginalFilename()+"-" + date.format(new Date());
 
-        PostTest postTest = PostTest.builder().title(imageUploadToS3Dto.getTitle()).thumbnailPath(thumbnailPath).build();
+        PostTest postTest = PostTest.builder().id(imageUploadToS3Dto.getId()).num(imageUploadToS3Dto.getNum()).title(imageUploadToS3Dto.getTitle()).thumbnailPath(thumbnailPath).build();
         PostTest savedPost = postTestRepository.save(postTest);
 
         for(int i = 0; i< files.size(); i++){
@@ -75,4 +78,35 @@ public class ImageService {
 
     }
 
+    public PostDto getImage() {
+        PostTest postTest = postTestRepository.findById(3L).orElseThrow(
+                () -> new CommonNotFoundException("not")
+        );
+        List<Image> images = imageRepository.findByPostTestId(postTest.getId());
+        List<String> paths = new ArrayList<>();
+        images.forEach(e -> paths.add(
+                "https://" + S3Service.CLOUD_FRONT_DOMAIN_NAME + "/" + e.getFilePath()
+        ));
+
+        PostDto dto = PostDto.builder().filePaths(paths).title(postTest.getTitle()).build();
+        return dto;
+    }
+
+    @Transactional
+    public void deleteImages() {
+        PostTest postTest = postTestRepository.findById(2L).orElseThrow(
+                () -> new CommonNotFoundException("not")
+        );
+        postTestRepository.delete(postTest);
+        List<Image> images = imageRepository.findByPostTestId(postTest.getId());
+        images.forEach(e -> {
+            try {
+                s3Service.delete(e.getFilePath());
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        });
+        images.forEach(e -> imageRepository.delete(e));
+
+        }
 }

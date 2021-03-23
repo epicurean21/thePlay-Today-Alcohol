@@ -23,10 +23,14 @@ public class PostTest {
     @Column
     private String thumbnailPath;
 
+    @Column
+    private Integer num;
+
     @Builder
-    public PostTest(Long id, String title, String thumbnailPath){
+    public PostTest(Long id, String title, String thumbnailPath, Integer num){
         this.id = id;
         this.title = title;
         this.thumbnailPath = thumbnailPath;
+        this.num = num;
     }
 }
