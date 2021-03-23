@@ -2,12 +2,14 @@ package kr.co.theplay.service.user;
 
 import javax.annotation.Generated;
 import kr.co.theplay.domain.user.User;
+import kr.co.theplay.domain.user.User.UserBuilder;
 import kr.co.theplay.dto.user.UserSettingsDto;
+import kr.co.theplay.dto.user.UserSettingsDto.UserSettingsDtoBuilder;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-03-21T15:01:23+0900",
-    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 1.8.0_191-1-ojdkbuild (Oracle Corporation)"
+    date = "2021-03-18T16:48:13+0900",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 15.0.1 (AdoptOpenJDK)"
 )
 public class UserSettingsDtoMapperImpl implements UserSettingsDtoMapper {
 
@@ -17,19 +19,12 @@ public class UserSettingsDtoMapperImpl implements UserSettingsDtoMapper {
             return null;
         }
 
-        String email = null;
-        String nickname = null;
+        UserBuilder user = User.builder();
 
-        email = arg0.getEmail();
-        nickname = arg0.getNickname();
+        user.email( arg0.getEmail() );
+        user.nickname( arg0.getNickname() );
 
-        Long id = null;
-        String password = null;
-        String privacyYn = null;
-
-        User user = new User( id, email, password, nickname, privacyYn );
-
-        return user;
+        return user.build();
     }
 
     @Override
@@ -38,8 +33,11 @@ public class UserSettingsDtoMapperImpl implements UserSettingsDtoMapper {
             return null;
         }
 
-        UserSettingsDto userSettingsDto = new UserSettingsDto();
+        UserSettingsDtoBuilder userSettingsDto = UserSettingsDto.builder();
 
-        return userSettingsDto;
+        userSettingsDto.nickname( arg0.getNickname() );
+        userSettingsDto.email( arg0.getEmail() );
+
+        return userSettingsDto.build();
     }
 }

@@ -2,12 +2,13 @@ package kr.co.theplay.service.notice;
 
 import javax.annotation.Generated;
 import kr.co.theplay.domain.notice.Notice;
+import kr.co.theplay.domain.notice.Notice.NoticeBuilder;
 import kr.co.theplay.dto.notice.NoticeSingleDto;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-03-21T15:01:23+0900",
-    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 1.8.0_191-1-ojdkbuild (Oracle Corporation)"
+    date = "2021-03-18T18:43:03+0900",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 15.0.1 (AdoptOpenJDK)"
 )
 public class NoticeSingleDtoMapperImpl implements NoticeSingleDtoMapper {
 
@@ -17,17 +18,13 @@ public class NoticeSingleDtoMapperImpl implements NoticeSingleDtoMapper {
             return null;
         }
 
-        Long id = null;
-        String title = null;
-        String content = null;
+        NoticeBuilder notice = Notice.builder();
 
-        id = arg0.getId();
-        title = arg0.getTitle();
-        content = arg0.getContent();
+        notice.id( arg0.getId() );
+        notice.title( arg0.getTitle() );
+        notice.content( arg0.getContent() );
 
-        Notice notice = new Notice( id, title, content );
-
-        return notice;
+        return notice.build();
     }
 
     @Override

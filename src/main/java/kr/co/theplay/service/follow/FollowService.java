@@ -1,5 +1,7 @@
 package kr.co.theplay.service.follow;
 
+import kr.co.theplay.domain.follow.Block;
+import kr.co.theplay.domain.follow.BlockRepository;
 import kr.co.theplay.domain.follow.Follow;
 import kr.co.theplay.domain.follow.FollowRepository;
 import kr.co.theplay.domain.user.User;
@@ -22,19 +24,20 @@ public class FollowService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final BlockRepository blockRepository;
 
     @Transactional
     public void followUser(String email, Long userId) {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-        if(userId == user.getId()){
+        if (userId == user.getId()) {
             //본인을 팔로우하려는 경우
             throw new CommonNotFoundException("followedUserNotFound");
         }
         User followedUser = userRepository.findById(userId).orElseThrow(() -> new CommonNotFoundException("followedUserNotFound"));
-        
+
         //이미 팔로우 관계가 존재하는 경우
-        if(followRepository.findByUserAndUserFollow(user, followedUser).isPresent()){
+        if (followRepository.findByUserAndUserFollow(user, followedUser).isPresent()) {
             throw new CommonConflictException("followConflict");
         }
 
@@ -42,7 +45,7 @@ public class FollowService {
         followRepository.save(follow);
     }
 
-    public List<FollowUserDto> getFollowings(String email){
+    public List<FollowUserDto> getFollowings(String email) {
 
         List<Follow> follows = followRepository.findFollowingsByUser(email);
 
@@ -52,5 +55,58 @@ public class FollowService {
         ));
 
         return followUserDtos;
+    }
+
+    public List<FollowUserDto> getFollowers(String email) {
+        List<Follow> follows = followRepository.findFollowersByUser(email);
+        List<FollowUserDto> followUserDtos = new ArrayList<>();
+        follows.forEach(f -> followUserDtos.add(
+                FollowUserDto.builder()
+                        .id(f.getUser().getId())
+                        .nickname(f.getUser().getNickname())
+                        .build()
+        ));
+        return followUserDtos;
+    }
+
+    @Transactional
+    public void deleteFollower(String email, Long id) {
+        // email은 로그인 한 사용자꺼, id 삭제하고자 하는 유저
+
+        // 취소하고자 하는 유저가 존재하지 않을경우
+        User user = userRepository.findById(id).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        Follow follow = followRepository.findFollowerById(email, id);
+
+        // 나를 팔로잉 하고 있지 않은 회원일 경우
+        if (follow == null) {
+            throw new CommonNotFoundException("followerUserNotFound");
+        }
+
+        followRepository.delete(follow);
+    }
+
+    @Transactional
+    public void deleteFollowing(String email, Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        Follow follow = followRepository.findFollowingById(email, id);
+
+        if (follow == null) {
+            throw new CommonNotFoundException("followingUserNotFound");
+        }
+
+        followRepository.delete(follow);
+    }
+
+    @Transactional
+    public void blockFollower(String email, Long id) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        User userBlock = userRepository.findById(id).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        if (blockRepository.findByUserAndUserBlock(user, userBlock).isPresent()) {
+            throw new CommonConflictException("blockConflict");
+        }
+
+        Block block = Block.builder().user(user).userBlock(userBlock).build();
+        blockRepository.save(block);
+        deleteFollower(user.getEmail(), userBlock.getId());
     }
 }

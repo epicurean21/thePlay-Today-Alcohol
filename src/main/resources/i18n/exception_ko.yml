@@ -50,3 +50,15 @@ followedUserNotFound:
 followConflict:
   code: "-3001"
   msg: "이미 팔로우 중인 사용자입니다."
+
+followingUserNotFound:
+  code: "-3002"
+  msg: "팔로잉 하고있지 않는 회원입니다."
+
+followerUserNotFound:
+  code: "-3003"
+  msg: "나를 팔로잉 하고있지 않습니다."
+
+blockConflict:
+  code: "-3004"
+  msg: "이미 차단한 사용자 입니다."
