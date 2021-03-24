@@ -195,7 +195,7 @@ public class UserService {
         };
 
         List<RandomNicknameDto> randomNicknameDto = new ArrayList<>();
-        boolean[] bool = new boolean[25];
+        boolean[] bool = new boolean[27];
         int idx = 0;
         for (int i = 0; i < 2; i++) {
             String randomNickname = "";
