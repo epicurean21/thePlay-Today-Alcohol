@@ -1,9 +1,9 @@
 package kr.co.theplay.service.zzz;
 
-import kr.co.theplay.domain.images.Image;
-import kr.co.theplay.domain.images.ImageRepository;
-import kr.co.theplay.domain.images.PostTest;
-import kr.co.theplay.domain.images.PostTestRepository;
+import kr.co.theplay.domain.zzz.Image;
+import kr.co.theplay.domain.zzz.ImageRepository;
+import kr.co.theplay.domain.zzz.PostTest;
+import kr.co.theplay.domain.zzz.PostTestRepository;
 import kr.co.theplay.dto.zzz.ImageUploadDto;
 import kr.co.theplay.dto.zzz.ImageUploadToS3Dto;
 import kr.co.theplay.dto.zzz.PostDto;
@@ -56,9 +56,9 @@ public class ImageService {
     }
 
     @Transactional
-    public void savePostDto(ImageUploadToS3Dto imageUploadToS3Dto) throws IOException {
+    public void savePostDto(List<MultipartFile> files, ImageUploadToS3Dto imageUploadToS3Dto) throws IOException {
 
-        List<MultipartFile> files = imageUploadToS3Dto.getFiles();
+//        List<MultipartFile> files = imageUploadToS3Dto.getFiles();
 
         SimpleDateFormat date = new SimpleDateFormat("yyyymmddHHmmsss");
         String thumbnailPath = files.get(0).getOriginalFilename()+"-" + date.format(new Date());

@@ -1,4 +1,4 @@
-package kr.co.theplay.domain.images;
+package kr.co.theplay.domain.zzz;
 
 import lombok.AccessLevel;
 import lombok.Builder;

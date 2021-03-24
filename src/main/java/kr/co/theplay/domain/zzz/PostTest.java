@@ -1,4 +1,4 @@
-package kr.co.theplay.domain.images;
+package kr.co.theplay.domain.zzz;
 
 import com.sun.xml.bind.v2.model.core.ReferencePropertyInfo;
 import lombok.AccessLevel;

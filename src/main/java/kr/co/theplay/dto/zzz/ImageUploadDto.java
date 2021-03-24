@@ -1,7 +1,7 @@
 package kr.co.theplay.dto.zzz;
 
 import io.swagger.annotations.ApiModelProperty;
-import kr.co.theplay.domain.images.Image;
+import kr.co.theplay.domain.zzz.Image;
 import lombok.*;
 
 @Getter
