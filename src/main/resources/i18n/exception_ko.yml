@@ -43,6 +43,10 @@ imageSizeExcessLimit:
   code: "-2001"
   msg: "이미지가 최대 업로드 용량 (5 MB) 를 초과하였습니다."
 
+postNotFound:
+  code: "-2002"
+  msg: "존재하지 않는 게시글입니다"
+
 followedUserNotFound:
   code: "-3000"
   msg: "팔로우 하려는 사용자가 존재하지 않습니다."

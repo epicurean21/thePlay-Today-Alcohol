@@ -37,9 +37,8 @@ public class PostController {
     @ApiOperation(value = "게시글 작성하기", notes = "로그인한 회원이 게시글을 작성한다.")
     @PostMapping(value = "/post")
     public ResponseEntity<CommonResult> createPost(
-            @RequestPart("request")PostReqDto postReqDto,
-            @RequestPart("files") List<MultipartFile> files)
-    {
+            @RequestPart("request") PostReqDto postReqDto,
+            @RequestPart("files") List<MultipartFile> files) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -49,6 +48,23 @@ public class PostController {
         }
 
         postService.create(email, postReqDto, files);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "게시글 신고하기", notes = "게시글을 신고한다")
+    @PostMapping(value = "/post/report/{postId}")
+    public ResponseEntity<CommonResult> reportPost(@PathVariable Long postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        postService.reportPost(email, postId);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 }

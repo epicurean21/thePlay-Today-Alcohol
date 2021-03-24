@@ -186,25 +186,27 @@ public class UserService {
     }
 
     public List<RandomNicknameDto> getRandomNickname() {
-        String[] nicknameSet = new String[]{
-                "오늘한주", "멋쟁이 신사", "우아한 보드카", "멋쟁이 숙녀", "주량10병",
-                "인생한잔", "아빠의 술냄새", "와인을 좋아해", "맥주를 좋아해", "피그는 꿀꿀",
-                "더스틴은 멋쟁이", "리리는 멋쟁이", "제레마이는 멋쟁이", "릴리는 멋쟁이", "더플레이 한잔",
-                "고진감래 한잔", "소주는 참이슬", "맥주는 하얼빈", "양꼬치 칭따오", "삼겹살 소주",
-                "얼음과 위스키", "피그 주량 5병", "피그는 멋쟁이", "남녀칠세부동석", "소맥은 진리"
+        String[] nicknameSetA = new String[]{
+                "멋쟁이", "우아한", "상큼한", "얼음과", "차가운", "나만의", "신나는"
+        };
+        String[] nicknameSetB = new String[]{
+                "보드카", "소주", "맥주", "수제맥주", "위스키", "와인", "칵테일", "바텐더", "사케", "막걸리"
         };
 
         List<RandomNicknameDto> randomNicknameDto = new ArrayList<>();
-        boolean[] bool = new boolean[27];
-        int idx = 0;
+        boolean[] boolA = new boolean[10];
+        boolean[] boolB = new boolean[10];
+        int idx1 = 0, idx2 = 0;
         for (int i = 0; i < 2; i++) {
             String randomNickname = "";
-            idx = (int) (nicknameSet.length * Math.random());
-            while (bool[idx] == true) {
-                idx = (int) (nicknameSet.length * Math.random());
-            }
-            bool[idx] = true;
-            randomNickname = nicknameSet[idx];
+            idx1 = (int) (nicknameSetA.length * Math.random());
+            idx2 = (int) (nicknameSetB.length * Math.random());
+            while (boolA[idx1] == true)
+                idx1 = (int) (nicknameSetA.length * Math.random());
+            while (boolB[idx2] == true)
+                idx2 = (int) (nicknameSetB.length * Math.random());
+            boolA[idx1] = boolB[idx2] = true;
+            randomNickname += (nicknameSetA[idx1] + " " + nicknameSetB[idx2]);
             RandomNicknameDto randomNicknameDto1 = RandomNicknameDto.builder().nickname(randomNickname).build();
             randomNicknameDto.add(randomNicknameDto1);
         }

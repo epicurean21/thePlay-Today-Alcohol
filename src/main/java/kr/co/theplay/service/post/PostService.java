@@ -43,28 +43,28 @@ public class PostService {
         postRepository.save(post);
 
         //AlcoholTag list 생성, 각 alcoholTag의 post 세팅, 저장
-        if(postReqDto.getAlcoholTags() != null &&postReqDto.getAlcoholTags().size() > 0) {
+        if (postReqDto.getAlcoholTags() != null && postReqDto.getAlcoholTags().size() > 0) {
             List<AlcoholTag> alcoholTags = postReqDto.getAlcoholTags().stream().map(AlcoholTagDto::toEntity).collect(Collectors.toList());
             alcoholTags.forEach(e -> e.changePost(post));
             alcoholTagRepository.saveAll(alcoholTags);
         }
-        
+
         //RecipeIngredient list 생성, 각 post 세팅, 저장
-        if(postReqDto.getIngredients() != null && postReqDto.getIngredients().size() > 0){
+        if (postReqDto.getIngredients() != null && postReqDto.getIngredients().size() > 0) {
             List<RecipeIngredient> ingredients = postReqDto.getIngredients().stream().map(RecipeIngredientDto::toEntity).collect(Collectors.toList());
             ingredients.forEach(e -> e.changePost(post));
             recipeIngredientRepository.saveAll(ingredients);
         }
 
         //RecipeStep list 생성, 각 post 세팅, 저장
-        if(postReqDto.getSteps() != null && postReqDto.getSteps().size() > 0){
+        if (postReqDto.getSteps() != null && postReqDto.getSteps().size() > 0) {
             List<RecipeStep> steps = postReqDto.getSteps().stream().map(RecipeStepDto::toEntity).collect(Collectors.toList());
             steps.forEach(e -> e.changePost(post));
             recipeStepRepository.saveAll(steps);
         }
 
         //file 저장
-        for(int i = 0; i < files.size(); i++){
+        for (int i = 0; i < files.size(); i++) {
 
             String filePath = null;
             try {
@@ -73,7 +73,7 @@ public class PostService {
                 e.printStackTrace();
             }
 
-            if(filePath == "EXCEED"){
+            if (filePath == "EXCEED") {
                 throw new CommonBadRequestException("imageSizeExcessLimit");
             }
             PostImage postImage = PostImage.builder().post(post).number(i).filePath(filePath).build();
@@ -82,4 +82,14 @@ public class PostService {
 
     }
 
+    @Transactional
+    public void reportPost(String email, Long postId) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
+
+        /*Report report = Report.builder()
+                .post(post)
+                .user(user)
+                .content()*/
+    }
 }
