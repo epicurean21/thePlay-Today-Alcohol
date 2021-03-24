@@ -222,4 +222,12 @@ public class UserController {
         SingleResult<NoticeSingleDto> result = responseService.getSingleResult(noticeSingleDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @ApiOperation(value = "회원가임 랜덤 닉네임 조회", notes = "회원가입 랜덤 닉네임 조회")
+    @GetMapping(value = "/sign-up")
+    public ResponseEntity<ListResult<RandomNicknameDto>> getRandomNickname() {
+        List<RandomNicknameDto> randomNicknameDto = userService.getRandomNickname();
+        ListResult<RandomNicknameDto> result = responseService.getListResult(randomNicknameDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
