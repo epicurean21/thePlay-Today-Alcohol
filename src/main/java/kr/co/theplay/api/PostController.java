@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import kr.co.theplay.dto.Post.PostReportReqDto;
 import kr.co.theplay.dto.Post.PostReqDto;
 import kr.co.theplay.dto.zzz.ImageUploadToS3Dto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
@@ -55,8 +56,8 @@ public class PostController {
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "게시글 신고하기", notes = "게시글을 신고한다")
-    @PostMapping(value = "/post/report/{postId}")
-    public ResponseEntity<CommonResult> reportPost(@PathVariable Long postId) {
+    @PostMapping(value = "/post/report")
+    public ResponseEntity<CommonResult> reportPost(@RequestBody PostReportReqDto postReportReqDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
@@ -64,7 +65,7 @@ public class PostController {
             throw new CommonConflictException("accessException");
         }
 
-        postService.reportPost(email, postId);
+        postService.reportPost(email, postReportReqDto);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 }

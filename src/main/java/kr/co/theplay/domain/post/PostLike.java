@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Report extends BaseTimeEntity {
+public class PostLike extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,19 +21,14 @@ public class Report extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    // 신고 한 사람
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column
-    private String content;
-
     @Builder
-    public Report(Long id, Post post, User user, String content) {
+    public PostLike(Long id, Post post, User user) {
         this.id = id;
         this.post = post;
         this.user = user;
-        this.content = content;
     }
 }

@@ -8,11 +8,15 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class PostReportReqDto {
+    @ApiModelProperty(value = "게시글 번호", dataType = "Integer", required = true, example = "1")
+    private Long postId;
+
     @ApiModelProperty(value = "신고 이유", dataType = "String", required = true, example = "스팸")
     private String content;
 
     @Builder
-    public PostReportReqDto(String content) {
+    public PostReportReqDto(Long postId, String content) {
+        this.postId = postId;
         this.content = content;
     }
 }

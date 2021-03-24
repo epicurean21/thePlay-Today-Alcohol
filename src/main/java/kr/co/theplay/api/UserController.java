@@ -230,4 +230,22 @@ public class UserController {
         ListResult<RandomNicknameDto> result = responseService.getListResult(randomNicknameDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "유저 메인 상단 정보", notes = "유저 메인 상단 정보 [게시물, 좋아요, 팔로워, 나의 레시피]")
+    @GetMapping(value = "/user/main-info")
+    public ResponseEntity<SingleResult<UserMainInfoDto>> getUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        UserMainInfoDto userMainInfoDto = userService.getUserMainInfo(email);
+        SingleResult<UserMainInfoDto> result = responseService.getSingleResult(userMainInfoDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

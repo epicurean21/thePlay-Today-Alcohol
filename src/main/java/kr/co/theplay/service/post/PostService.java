@@ -3,10 +3,7 @@ package kr.co.theplay.service.post;
 import kr.co.theplay.domain.post.*;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
-import kr.co.theplay.dto.Post.AlcoholTagDto;
-import kr.co.theplay.dto.Post.PostReqDto;
-import kr.co.theplay.dto.Post.RecipeIngredientDto;
-import kr.co.theplay.dto.Post.RecipeStepDto;
+import kr.co.theplay.dto.Post.*;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import kr.co.theplay.service.zzz.S3Service;
@@ -31,11 +28,18 @@ public class PostService {
     private final RecipeStepRepository recipeStepRepository;
     private final PostImageRepository postImageRepository;
     private final S3Service s3Service;
+    private final PostReportRepository postReportRepository;
 
     @Transactional
     public void create(String email, PostReqDto postReqDto, List<MultipartFile> files) {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+
+        // Validation <1> 해당 사용자가 신고를 5회이상 받았다 그럼 작성 불가로 Exception
+        int cnt = postReportRepository.findCountReportByUser(user.getEmail());
+        if (cnt >= 5) { // 5회 이상 신고를 받았다
+            throw new CommonBadRequestException("postUserReportExceed");
+        }
 
         //Post 생성, post의 user 세팅, 저장
         Post post = postReqDto.toEntity();
@@ -83,13 +87,14 @@ public class PostService {
     }
 
     @Transactional
-    public void reportPost(String email, Long postId) {
+    public void reportPost(String email, PostReportReqDto postReportReqDto) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
+        Post post = postRepository.findById(postReportReqDto.getPostId()).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
 
-        /*Report report = Report.builder()
-                .post(post)
-                .user(user)
-                .content()*/
+        if (postReportRepository.findByUserAndPost(user, post).isPresent()) {
+            throw new CommonBadRequestException("postReportConflict");
+        }
+        PostReport postReport = PostReport.builder().post(post).user(user).content(postReportReqDto.getContent()).build();
+        postReportRepository.save(postReport);
     }
 }

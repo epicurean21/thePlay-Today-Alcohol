@@ -1,6 +1,9 @@
 package kr.co.theplay.service.user;
 
 import kr.co.theplay.api.config.security.JwtTokenProvider;
+import kr.co.theplay.domain.follow.Follow;
+import kr.co.theplay.domain.follow.FollowRepository;
+import kr.co.theplay.domain.post.*;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.domain.user.UserRole;
@@ -27,6 +30,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
+    private final PostRepository postRepository;
+    private final FollowRepository followRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final RecipeIngredientRepository recipeIngredientRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -212,5 +219,15 @@ public class UserService {
         }
 
         return randomNicknameDto;
+    }
+
+    public UserMainInfoDto getUserMainInfo(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        List<Post> postCount = postRepository.findByUserEmail(email);
+        List<Follow> followerCount = followRepository.findFollowersByUser(email);
+        List<PostLike> likesCount = postLikeRepository.findByUserEmail(email);
+        List<RecipeIngredient> recipesCount = recipeIngredientRepository.findByUserEmail(email);
+        UserMainInfoDto userMainInfoDto = UserMainInfoDto.builder().posts(postCount.stream().count()).followers(followerCount.stream().count()).likes(likesCount.stream().count()).recipes(recipesCount.stream().count()).build();
+        return userMainInfoDto;
     }
 }

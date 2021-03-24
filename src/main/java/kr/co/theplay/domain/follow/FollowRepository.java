@@ -36,4 +36,8 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     // A가 B를 팔로잉 하고있는데 이 팔로잉을 취소한다.
     @Query("select f from Follow f where f.user.email = :email and f.userFollow.id = :id")
     Follow findFollowingById(@Param("email") String email, @Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"userFollow"})
+    @Query("select count (f) from Follow f where f.userFollow.email = :email")
+    Long findFollowersCountByUser(@Param("email") String email);
 }
