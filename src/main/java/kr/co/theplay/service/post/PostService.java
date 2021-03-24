@@ -8,6 +8,10 @@ import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import kr.co.theplay.service.zzz.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -97,4 +101,42 @@ public class PostService {
         PostReport postReport = PostReport.builder().post(post).user(user).content(postReportReqDto.getContent()).build();
         postReportRepository.save(postReport);
     }
+
+    public Page<PostResDto> getPostsForMain(int number, int size) {
+
+        Pageable pageable = PageRequest.of(number, size);
+        Page<Post> posts = postRepository.getLatestPostsForMain(pageable);
+        List<Post> postList = posts.getContent();
+        List<PostResDto> dtos = posts.stream().map(PostResDto::new).collect(Collectors.toList());
+
+        for(int i = 0; i<dtos.size(); i++){
+            //image 매칭
+            List<PostImage> images = postList.get(i).getImages();
+            List<PostImageDto> imageDtos = images.stream().map(PostImageDto::new).collect(Collectors.toList());
+            dtos.get(i).setImages(imageDtos);
+
+            //alcoholTag 매칭
+            List<AlcoholTag> alcoholTags = postList.get(i).getAlcoholTags();
+            List<AlcoholTagDto> alcoholTagDtos = alcoholTags.stream().map(AlcoholTagDto::new).collect(Collectors.toList());
+            dtos.get(i).setAlcoholTags(alcoholTagDtos);
+
+            //레시피가 있는 경우 검색
+            if(dtos.get(i).getHaveRecipeYn().equals("Y")){
+
+                //ingredient 검색 후 매칭
+                List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
+                dtos.get(i).setIngredients(ingredientDtos);
+
+                //step 검색 후 매칭
+                List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
+                dtos.get(i).setSteps(stepDtos);
+
+            }
+        }
+
+        return new PageImpl<>(dtos, pageable, posts.getTotalElements());
+    }
+
 }

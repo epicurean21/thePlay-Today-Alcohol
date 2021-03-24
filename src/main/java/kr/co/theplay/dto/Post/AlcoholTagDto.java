@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.StringJoiner;
+
 @Getter
 @NoArgsConstructor
 public class AlcoholTagDto {
@@ -39,5 +41,12 @@ public class AlcoholTagDto {
                 .color(color)
                 .recipeYn(recipeYn)
                 .build();
+    }
+
+    public AlcoholTagDto(AlcoholTag alcoholTag){
+        this.iconName = alcoholTag.getIconKind().getCodeValue();
+        this.name = alcoholTag.getName();
+        this.color = alcoholTag.getColor();
+        this.recipeYn = alcoholTag.getRecipeYn();
     }
 }

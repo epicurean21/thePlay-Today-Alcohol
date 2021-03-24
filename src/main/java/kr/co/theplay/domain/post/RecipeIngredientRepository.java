@@ -10,4 +10,7 @@ public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredie
 
     @Query("select r from RecipeIngredient r where r.post.user.email = :email")
     List<RecipeIngredient> findByUserEmail(@Param("email") String email);
+
+    @Query(value = "select ri from RecipeIngredient ri where ri.post.id = :postId")
+    List<RecipeIngredient> findByPostId(@Param("postId") Long postId);
 }

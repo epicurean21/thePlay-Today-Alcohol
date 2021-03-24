@@ -6,13 +6,16 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.theplay.dto.Post.PostReportReqDto;
 import kr.co.theplay.dto.Post.PostReqDto;
+import kr.co.theplay.dto.Post.PostResDto;
 import kr.co.theplay.dto.zzz.ImageUploadToS3Dto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
+import kr.co.theplay.service.api.common.model.SingleResult;
 import kr.co.theplay.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -67,5 +70,25 @@ public class PostController {
 
         postService.reportPost(email, postReportReqDto);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "메인 피드 게시글 조회", notes = "메인 피드에서 게시글을 조회한다,")
+    @GetMapping(value = "/main-posts")
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getPostsForMain(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        Page<PostResDto> postResDtos = postService.getPostsForMain(number, size);
+        SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+
     }
 }

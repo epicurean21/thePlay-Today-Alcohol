@@ -40,4 +40,11 @@ public class RecipeIngredientDto {
                 .color(color)
                 .build();
     }
+
+    public RecipeIngredientDto (RecipeIngredient recipeIngredient){
+        this.iconName = recipeIngredient.getIconKind().getCodeValue();
+        this.name = recipeIngredient.getName();
+        this.quantity = recipeIngredient.getQuantity();
+        this.color = recipeIngredient.getColor();
+    }
 }

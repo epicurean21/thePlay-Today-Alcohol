@@ -28,4 +28,9 @@ public class RecipeStepDto {
                 .content(content)
                 .build();
     }
+
+    public RecipeStepDto (RecipeStep recipeStep){
+        this.number = recipeStep.getNumber();
+        this.content = recipeStep.getContent();
+    }
 }
