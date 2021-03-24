@@ -16,7 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByUserEmail(String email);
 
-    @Query(value = "select p from Post p " +
+    @Query(value = "select distinct p from Post p " +
             "inner join PostImage pi on pi.post.id = p.id " +
             "inner join AlcoholTag at on at.post.id = p.id " +
             "order by p.createdDate desc ")
