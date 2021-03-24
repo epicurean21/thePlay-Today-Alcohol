@@ -55,6 +55,10 @@ postUserReportExceed:
   code: "-2004"
   msg: "최근 신고를 많이 받은 사용자입니다"
 
+postReportReasonIncorrect:
+  code: "-2005"
+  msg: "올바른 신고 이유 (0 ~ 2) 를 입력해주세요."
+
 followedUserNotFound:
   code: "-3000"
   msg: "팔로우 하려는 사용자가 존재하지 않습니다."
