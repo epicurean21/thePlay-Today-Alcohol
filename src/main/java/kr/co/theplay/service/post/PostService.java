@@ -94,6 +94,12 @@ public class PostService {
         if (postReportRepository.findByUserAndPost(user, post).isPresent()) {
             throw new CommonBadRequestException("postReportConflict");
         }
+
+        int reason = Integer.parseInt(postReportReqDto.getContent());
+        if (reason > 2 || reason < 0) {
+            throw new CommonBadRequestException("postReportReasonIncorrect");
+        }
+
         PostReport postReport = PostReport.builder().post(post).user(user).content(postReportReqDto.getContent()).build();
         postReportRepository.save(postReport);
     }
