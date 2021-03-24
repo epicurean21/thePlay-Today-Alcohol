@@ -34,7 +34,7 @@ public class RecipeIngredientDto {
 
     public RecipeIngredient toEntity(){
         return RecipeIngredient.builder()
-                .iconKind(IconKind.enumOfByName(iconName))
+                .iconKind(IconKind.enumOf(iconName))
                 .name(name)
                 .quantity(quantity)
                 .color(color)

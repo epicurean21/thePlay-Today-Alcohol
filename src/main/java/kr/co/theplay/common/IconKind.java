@@ -29,10 +29,4 @@ public enum IconKind {
                 .filter(t -> t.getCodeValue().equals(codeValue))
                 .findAny().orElse(null);
     }
-
-    public static IconKind enumOfByName(String nameValue){
-        return Arrays.stream(IconKind.values())
-                .filter(t -> t.getNameValue().equals(nameValue))
-                .findAny().orElse(null);
-    }
 }

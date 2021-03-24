@@ -34,7 +34,7 @@ public class AlcoholTagDto {
 
     public AlcoholTag toEntity(){
         return AlcoholTag.builder()
-                .iconKind(IconKind.enumOfByName(iconName))
+                .iconKind(IconKind.enumOf(iconName))
                 .name(name)
                 .color(color)
                 .recipeYn(recipeYn)
