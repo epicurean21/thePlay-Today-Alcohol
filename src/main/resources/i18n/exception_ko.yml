@@ -71,6 +71,10 @@ commentNotAllowed:
   code: "-2008"
   msg: "대댓글에 대댓글을 달 수 없습니다."
 
+commentPostNotEqual:
+  code: "-2009"
+  msg: "대댓글과 부모 댓글의 게시글이 다릅니다."
+
 followedUserNotFound:
   code: "-3000"
   msg: "팔로우 하려는 사용자가 존재하지 않습니다."

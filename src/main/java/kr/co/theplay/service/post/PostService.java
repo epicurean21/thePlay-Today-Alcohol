@@ -319,7 +319,9 @@ public class PostService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
 
-        // 부모 댓글 존재하지 않을때, 또는 대댓글에 대댓글을 달려고 할 때의 Validation
+        // 부모 댓글 존재하지 않을때
+        // 대댓글에 대댓글을 달려고 할 때
+        // 부모 댓글과 대댓글의 게시물 id가 다를 때
         if(postCommentReqDto.getPostCommentParentId() != 0) {
             PostComment parentComment = postCommentRepository
                     .findById(postCommentReqDto.getPostCommentParentId())
@@ -327,6 +329,9 @@ public class PostService {
 
             if(parentComment.getPostCommentParentId() != 0)
                 throw new CommonBadRequestException("commentNotAllowed");
+
+            if(parentComment.getPost().getId() != postId)
+                throw new CommonBadRequestException("commentPostNotEqual");
         }
 
         PostComment postComment = PostComment.builder()
