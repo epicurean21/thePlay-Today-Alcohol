@@ -134,4 +134,22 @@ public class PostController {
         return new ResponseEntity<>(result, HttpStatus.OK);
 
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "게시글 수정", notes = "로그인한 사용자가 본인의 게시글을 수정한다.")
+    @PutMapping(value = "/post/{postId}")
+    public ResponseEntity<CommonResult> updatePost(@PathVariable Long postId, @RequestBody PostReqDto postReqDto){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        postService.updatePost(email, postId, postReqDto);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
 }

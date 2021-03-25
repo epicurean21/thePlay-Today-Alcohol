@@ -58,4 +58,9 @@ public class Post extends BaseTimeEntity {
         this.user = user;
     }
 
+    public void updatePost(String content, String haveRecipeYn){
+        this.content = content;
+        this.haveRecipeYn = haveRecipeYn;
+    }
+
 }

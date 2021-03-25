@@ -257,4 +257,61 @@ public class PostService {
         }
         return postCommentDtos;
     }
+
+    @Transactional
+    public void updatePost(String email, Long postId, PostReqDto postReqDto) {
+
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
+
+        //로그인한 사용자가 작성한 글이 맞는 지 확인 후 예외처리
+        if(!post.getUser().getEmail().equals(email)){
+            throw new CommonBadRequestException("accessException");
+        }
+
+        //post 내용 update
+        post.updatePost(postReqDto.getContent(), postReqDto.getHaveRecipeYn());
+
+        //기존 내용들 삭제
+        deleteForUpdate(post);
+
+        //AlcoholTag list 생성, 각각에 post 세팅, 저장
+        if (postReqDto.getAlcoholTags() != null && postReqDto.getAlcoholTags().size() > 0) {
+            List<AlcoholTag> updatedAlcoholTags = postReqDto.getAlcoholTags().stream().map(AlcoholTagDto::toEntity).collect(Collectors.toList());
+            updatedAlcoholTags.forEach(e -> e.changePost(post));
+            alcoholTagRepository.saveAll(updatedAlcoholTags);
+        }
+
+        //RecipeIngredient list 생성, 각각에 post 세팅, 저장
+        if(postReqDto.getIngredients() != null && postReqDto.getIngredients().size() > 0){
+            List<RecipeIngredient> updatedIngredients = postReqDto.getIngredients().stream().map(RecipeIngredientDto::toEntity).collect(Collectors.toList());
+            updatedIngredients.forEach(e -> e.changePost(post));
+            recipeIngredientRepository.saveAll(updatedIngredients);
+        }
+
+        //RecipeStep list 생성, 각 post 세팅, 저장
+        if (postReqDto.getSteps() != null && postReqDto.getSteps().size() > 0) {
+            List<RecipeStep> updatedSteps = postReqDto.getSteps().stream().map(RecipeStepDto::toEntity).collect(Collectors.toList());
+            updatedSteps.forEach(e -> e.changePost(post));
+            recipeStepRepository.saveAll(updatedSteps);
+        }
+
+    }
+
+    //flush를 통해 삭제 쿼리를 먼저 실행하도록 함.
+    public void deleteForUpdate(Post post){
+        //alcoholTags, ingredients, steps는 갯수도 변경될 수 있으므로 데이터 삭제 후 삽입으로 update 구현
+        List<AlcoholTag> alcoholTags = alcoholTagRepository.findByPost(post);
+        List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(post.getId());
+        List<RecipeStep> steps = recipeStepRepository.findByPostId(post.getId());
+
+        //TODO : 쿼리실행이 하나씩 되고 있음. 성능 개선 필요.
+        alcoholTagRepository.deleteAll(alcoholTags);
+        recipeIngredientRepository.deleteAll(ingredients);
+        recipeStepRepository.deleteAll(steps);
+
+        alcoholTagRepository.flush();
+        recipeIngredientRepository.flush();
+        recipeStepRepository.flush();
+    }
+
 }
