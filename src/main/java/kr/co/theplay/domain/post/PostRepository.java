@@ -21,4 +21,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "inner join AlcoholTag at on at.post.id = p.id " +
             "order by p.createdDate desc ")
     Page<Post> getLatestPostsForMain(Pageable pageable);
+
+    @Query(value = "select p from Post p " +
+            "where p.user.email = :email " +
+            "order by p.createdDate desc")
+    Page<Post> getUserLastestPosts(@Param("email") String email, Pageable pageable);
 }
