@@ -5,10 +5,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.theplay.domain.post.PostRepository;
-import kr.co.theplay.dto.Post.PostCommentDto;
-import kr.co.theplay.dto.Post.PostReportReqDto;
-import kr.co.theplay.dto.Post.PostReqDto;
-import kr.co.theplay.dto.Post.PostResDto;
+import kr.co.theplay.dto.Post.*;
 import kr.co.theplay.dto.zzz.ImageUploadToS3Dto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.common.ResponseService;
@@ -138,9 +135,28 @@ public class PostController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
+    @ApiOperation(value = "게시글 댓글 작성", notes = "댓글을 작성한다")
+    @PostMapping(value = "/posts/{postId}/comments")
+    public ResponseEntity<CommonResult> getUserPostsLike(@PathVariable Long postId, @RequestBody PostCommentReqDto postCommentReqDto) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        postService.createComment(email, postId, postCommentReqDto);
+
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
     @ApiOperation(value = "게시글 수정", notes = "로그인한 사용자가 본인의 게시글을 수정한다.")
     @PutMapping(value = "/post/{postId}")
-    public ResponseEntity<CommonResult> updatePost(@PathVariable Long postId, @RequestBody PostReqDto postReqDto){
+    public ResponseEntity<CommonResult> updatePost(@PathVariable Long postId, @RequestBody PostReqDto postReqDto) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();

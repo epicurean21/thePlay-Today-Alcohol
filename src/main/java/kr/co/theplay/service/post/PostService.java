@@ -264,7 +264,7 @@ public class PostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
 
         //로그인한 사용자가 작성한 글이 맞는 지 확인 후 예외처리
-        if(!post.getUser().getEmail().equals(email)){
+        if (!post.getUser().getEmail().equals(email)) {
             throw new CommonBadRequestException("accessException");
         }
 
@@ -282,7 +282,7 @@ public class PostService {
         }
 
         //RecipeIngredient list 생성, 각각에 post 세팅, 저장
-        if(postReqDto.getIngredients() != null && postReqDto.getIngredients().size() > 0){
+        if (postReqDto.getIngredients() != null && postReqDto.getIngredients().size() > 0) {
             List<RecipeIngredient> updatedIngredients = postReqDto.getIngredients().stream().map(RecipeIngredientDto::toEntity).collect(Collectors.toList());
             updatedIngredients.forEach(e -> e.changePost(post));
             recipeIngredientRepository.saveAll(updatedIngredients);
@@ -298,7 +298,7 @@ public class PostService {
     }
 
     //flush를 통해 삭제 쿼리를 먼저 실행하도록 함.
-    public void deleteForUpdate(Post post){
+    public void deleteForUpdate(Post post) {
         //alcoholTags, ingredients, steps는 갯수도 변경될 수 있으므로 데이터 삭제 후 삽입으로 update 구현
         List<AlcoholTag> alcoholTags = alcoholTagRepository.findByPost(post);
         List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(post.getId());
@@ -314,4 +314,27 @@ public class PostService {
         recipeStepRepository.flush();
     }
 
+    @Transactional
+    public void createComment(String email, Long postId, PostCommentReqDto postCommentReqDto) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
+
+        // 부모 댓글 존재하지 않을때, 또는 대댓글에 대댓글을 달려고 할 때의 Validation
+        if(postCommentReqDto.getPostCommentParentId() != 0) {
+            PostComment parentComment = postCommentRepository
+                    .findById(postCommentReqDto.getPostCommentParentId())
+                    .orElseThrow(() -> new CommonNotFoundException("parentCommentNotFound"));
+
+            if(parentComment.getPostCommentParentId() != 0)
+                throw new CommonBadRequestException("commentNotAllowed");
+        }
+
+        PostComment postComment = PostComment.builder()
+                .post(post)
+                .user(user)
+                .postCommentParentId(postCommentReqDto.getPostCommentParentId())
+                .content(postCommentReqDto.getContent())
+                .build();
+        postCommentRepository.save(postComment);
+    }
 }

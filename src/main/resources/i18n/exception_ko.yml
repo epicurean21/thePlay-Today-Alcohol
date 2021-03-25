@@ -63,6 +63,14 @@ commentNotFound:
   code: "-2006"
   msg: "게시글에 댓글이 존재하지 않습니다."
 
+parentCommentNotFound:
+  code: "-2007"
+  msg: "대댓글의 부모 댓글이 존재하지 않습니다."
+
+commentNotAllowed:
+  code: "-2008"
+  msg: "대댓글에 대댓글을 달 수 없습니다."
+
 followedUserNotFound:
   code: "-3000"
   msg: "팔로우 하려는 사용자가 존재하지 않습니다."
