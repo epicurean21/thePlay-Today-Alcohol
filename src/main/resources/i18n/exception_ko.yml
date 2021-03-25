@@ -59,6 +59,10 @@ postReportReasonIncorrect:
   code: "-2005"
   msg: "올바른 신고 이유 (0 ~ 2) 를 입력해주세요."
 
+commentNotFound:
+  code: "-2006"
+  msg: "게시글에 댓글이 존재하지 않습니다."
+
 followedUserNotFound:
   code: "-3000"
   msg: "팔로우 하려는 사용자가 존재하지 않습니다."

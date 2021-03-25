@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,8 @@ public class PostService {
     private final S3Service s3Service;
     private final PostReportRepository postReportRepository;
     private final PostLikeRepository postLikeRepository;
+    private final PostCommentRepository postCommentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public void create(String email, PostReqDto postReqDto, List<MultipartFile> files) {
@@ -204,4 +207,54 @@ public class PostService {
         return new PageImpl<>(dtos, pageable, posts.getTotalElements());
     }
 
+    public List<PostCommentDto> getComments(String email, Long postId) {
+
+        if (!postRepository.existsById(postId)) {
+            throw new CommonNotFoundException("postNotFound");
+        }
+
+        if (!postCommentRepository.existsByPostId(postId)) {
+            throw new CommonNotFoundException("commentNotFound");
+        }
+
+        List<PostComment> comments = postCommentRepository.findCommentsByPostId(postId);
+        List<PostCommentDto> postCommentDtos = comments.stream().map(PostCommentDto::new).collect(Collectors.toList());
+
+        for (int i = 0; i < postCommentDtos.size(); i++) {
+            // 대댓글이 존재 한다면
+            if (postCommentRepository.existsByPostCommentParentId(postCommentDtos.get(i).getPostCommentId())) {
+                List<PostComment> secondComments = postCommentRepository
+                        .findSecondCommentsByCommentId(
+                                postId, postCommentDtos.get(i).getPostCommentId());
+
+                List<PostSecondCommentDto> secondCommentDtos = secondComments.stream().map(PostSecondCommentDto::new).collect(Collectors.toList());
+
+                // 대댓글 좋아요 여부 및 개수
+                for (int j = 0; j < secondCommentDtos.size(); j++) {
+                    if (commentLikeRepository.existsByPostCommentIdAndUserEmail(secondCommentDtos.get(j).getPostCommentId(), email)) {
+                        secondCommentDtos.get(j).setCommentLikeYn("Y");
+                    } else {
+                        secondCommentDtos.get(j).setCommentLikeYn("N");
+                    }
+
+                    Long likeCount = commentLikeRepository.countAllByPostCommentId(secondCommentDtos.get(j).getPostCommentId());
+                    secondCommentDtos.get(j).setCommentLikeCount(likeCount);
+                }
+
+                postCommentDtos.get(i).setSecondComments(secondCommentDtos);
+            } else { // 대댓글 존재 X
+                postCommentDtos.get(i).setSecondComments(new ArrayList<>());
+            }
+
+            // 댓글 좋아요 여부 및 개수
+            if (commentLikeRepository.existsByPostCommentIdAndUserEmail(postCommentDtos.get(i).getPostCommentId(), email)) {
+                postCommentDtos.get(i).setCommentLikeYn("Y");
+            } else {
+                postCommentDtos.get(i).setCommentLikeYn("N");
+            }
+            Long likeCount = commentLikeRepository.countAllByPostCommentId(postCommentDtos.get(i).getPostCommentId());
+            postCommentDtos.get(i).setCommentLikeCount(likeCount);
+        }
+        return postCommentDtos;
+    }
 }

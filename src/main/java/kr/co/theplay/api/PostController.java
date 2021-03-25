@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.theplay.domain.post.PostRepository;
+import kr.co.theplay.dto.Post.PostCommentDto;
 import kr.co.theplay.dto.Post.PostReportReqDto;
 import kr.co.theplay.dto.Post.PostReqDto;
 import kr.co.theplay.dto.Post.PostResDto;
@@ -12,6 +13,7 @@ import kr.co.theplay.dto.zzz.ImageUploadToS3Dto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
+import kr.co.theplay.service.api.common.model.ListResult;
 import kr.co.theplay.service.api.common.model.SingleResult;
 import kr.co.theplay.service.post.PostService;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +80,7 @@ public class PostController {
     })
     @ApiOperation(value = "메인 피드 게시글 조회", notes = "메인 피드에서 게시글을 조회한다,")
     @GetMapping(value = "/main-posts")
-    public ResponseEntity<SingleResult<Page<PostResDto>>> getPostsForMain(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size){
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getPostsForMain(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -98,7 +100,7 @@ public class PostController {
     })
     @ApiOperation(value = "유저 메인 화면", notes = "유저의 메인 화면에서 게시글을 불러온다")
     @GetMapping(value = "/user/posts")
-    public ResponseEntity<SingleResult<Page<PostResDto>>> getUserPosts(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size){
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getUserPosts(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -109,6 +111,26 @@ public class PostController {
 
         Page<PostResDto> postResDtos = postService.getUserPosts(email, number, size);
         SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "게시글 댓글 조회", notes = "게시글의 댓글과 대댓글을 조회한다")
+    @GetMapping(value = "/posts/{postId}/comments")
+    public ResponseEntity<ListResult<PostCommentDto>> getUserPostsLike(@PathVariable Long postId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        List<PostCommentDto> postCommentDto = postService.getComments(email, postId);
+        ListResult<PostCommentDto> result = responseService.getListResult(postCommentDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
 
     }

@@ -51,12 +51,13 @@ public class PostResDto {
 
     @Builder
     public PostResDto(Long postId, Long userId, String nickname, String content, LocalDateTime createdDate,
-                      String haveRecipeYn, List<PostImageDto> images, List<AlcoholTagDto> alcoholTags,
+                      String haveRecipeYn, String postLikeYn, List<PostImageDto> images, List<AlcoholTagDto> alcoholTags,
                       List<RecipeIngredientDto> ingredients, List<RecipeStepDto> steps){
         this.postId = postId;
         this.userId = userId;
         this.nickname = nickname;
         this.content = content;
+        this.postLikeYn = postLikeYn;
         this.haveRecipeYn = haveRecipeYn;
         this.createdDate = createdDate;
         this.images = images;
