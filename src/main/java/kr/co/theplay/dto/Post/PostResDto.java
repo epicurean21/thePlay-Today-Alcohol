@@ -31,6 +31,9 @@ public class PostResDto {
     @ApiModelProperty(value = "레시피 존재 여부", dataType = "String", required = true, example = "Y")
     private String haveRecipeYn;
 
+    @ApiModelProperty(value = "게시물 좋아요 여부", dataType = "String", required = true, example = "Y")
+    private String postLikeYn;
+
     @ApiModelProperty(value = "생성일자", dataType = "LocalDateTime", required = true)
     private LocalDateTime createdDate;
 

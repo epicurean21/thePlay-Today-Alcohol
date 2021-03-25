@@ -33,6 +33,7 @@ public class PostService {
     private final PostImageRepository postImageRepository;
     private final S3Service s3Service;
     private final PostReportRepository postReportRepository;
+    private final PostLikeRepository postLikeRepository;
 
     @Transactional
     public void create(String email, PostReqDto postReqDto, List<MultipartFile> files) {
@@ -108,14 +109,16 @@ public class PostService {
         postReportRepository.save(postReport);
     }
 
-    public Page<PostResDto> getPostsForMain(int number, int size) {
+    public Page<PostResDto> getPostsForMain(String email, int number, int size) {
+
+        // 현재 토큰의 회원 정보가 필요해서 email을 추가로 받아옵니다.
 
         Pageable pageable = PageRequest.of(number, size);
         Page<Post> posts = postRepository.getLatestPostsForMain(pageable);
         List<Post> postList = posts.getContent();
         List<PostResDto> dtos = posts.stream().map(PostResDto::new).collect(Collectors.toList());
 
-        for(int i = 0; i<dtos.size(); i++){
+        for (int i = 0; i < dtos.size(); i++) {
             //image 매칭
             List<PostImage> images = postList.get(i).getImages();
             List<PostImageDto> imageDtos = images.stream().map(PostImageDto::new).collect(Collectors.toList());
@@ -126,9 +129,14 @@ public class PostService {
             List<AlcoholTagDto> alcoholTagDtos = alcoholTags.stream().map(AlcoholTagDto::new).collect(Collectors.toList());
             dtos.get(i).setAlcoholTags(alcoholTagDtos);
 
-            //레시피가 있는 경우 검색
-            if(dtos.get(i).getHaveRecipeYn().equals("Y")){
+            // 게시물 좋아요 여부 확인
+            if (postLikeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
+                dtos.get(i).setPostLikeYn("Y");
+            else
+                dtos.get(i).setPostLikeYn("N");
 
+            //레시피가 있는 경우 검색
+            if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
                 //ingredient 검색 후 매칭
                 List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
                 List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
@@ -142,6 +150,57 @@ public class PostService {
             }
         }
 
+        return new PageImpl<>(dtos, pageable, posts.getTotalElements());
+    }
+
+    @Transactional
+    public Page<PostResDto> getUserPosts(String email, int number, int size) {
+
+        // Service에서 pageNumber와 size로 pageRequest를 생성 Pageable로 ? PageRequest는 Pageable의 구현채
+        Pageable pageable = PageRequest.of(number, size);
+
+        // Page 형식으로 해당 유저의 최신 게시물 들을 가져온다 ! Page형식으로 가져오면, total 개수, 각 contents, pageable 속성을 알 수 있다.
+        Page<Post> posts = postRepository.getUserLastestPosts(email, pageable);
+
+        // 각 posts (contents 개수 만큼)을 하나하나 List 형식으로 가져온다. 즉, Contents만 가져온다. .toList() 도 가능
+        List<Post> postList = posts.getContent();
+
+        // return 할 dto 형식 PostResDto로 Mapping ? 한다.
+        List<PostResDto> dtos = posts.stream().map(PostResDto::new).collect(Collectors.toList());
+
+        // List 안에 dto의 개수만큼 for 문
+        for (int i = 0; i < dtos.size(); i++) {
+            //image 매칭
+            // i번 째 postList 안에 이미지들을 가져온다.
+            List<PostImage> images = postList.get(i).getImages();
+            List<PostImageDto> imageDtos = images.stream().map(PostImageDto::new).collect(Collectors.toList());
+            dtos.get(i).setImages(imageDtos);
+
+            //alcoholTag 매칭
+            List<AlcoholTag> alcoholTags = postList.get(i).getAlcoholTags();
+            List<AlcoholTagDto> alcoholTagDtos = alcoholTags.stream().map(AlcoholTagDto::new).collect(Collectors.toList());
+            dtos.get(i).setAlcoholTags(alcoholTagDtos);
+
+            // 게시물 좋아요 여부
+            if (postLikeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
+                dtos.get(i).setPostLikeYn("Y");
+            else
+                dtos.get(i).setPostLikeYn("N");
+
+            //레시피가 있는 경우 검색
+            if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
+
+                //ingredient 검색 후 매칭
+                List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
+                dtos.get(i).setIngredients(ingredientDtos);
+
+                //step 검색 후 매칭
+                List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
+                dtos.get(i).setSteps(stepDtos);
+            }
+        }
         return new PageImpl<>(dtos, pageable, posts.getTotalElements());
     }
 
