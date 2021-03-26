@@ -75,6 +75,10 @@ commentPostNotEqual:
   code: "-2009"
   msg: "대댓글과 부모 댓글의 게시글이 다릅니다."
 
+alcoholTagNotFound:
+  code: "-2010"
+  msg: "존재하지 않는 술 태그 입니다."
+
 followedUserNotFound:
   code: "-3000"
   msg: "팔로우 하려는 사용자가 존재하지 않습니다."

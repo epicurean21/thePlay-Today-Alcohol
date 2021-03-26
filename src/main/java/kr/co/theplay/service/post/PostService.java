@@ -2,6 +2,8 @@ package kr.co.theplay.service.post;
 
 import kr.co.theplay.domain.post.*;
 import kr.co.theplay.domain.user.User;
+import kr.co.theplay.domain.user.UserRecipe;
+import kr.co.theplay.domain.user.UserRecipeRepository;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.Post.*;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
@@ -39,6 +41,7 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final PostCommentRepository postCommentRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final UserRecipeRepository userRecipeRepository;
 
     @Transactional
     public void create(String email, PostReqDto postReqDto, List<MultipartFile> files) {
@@ -140,6 +143,13 @@ public class PostService {
             else
                 dtos.get(i).setPostLikeYn("N");
 
+            // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
+            if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
+                    userRecipeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
+                dtos.get(i).setSaveRecipeYn("Y");
+            else
+                dtos.get(i).setSaveRecipeYn("N");
+
             //댓글 개수 세팅
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
@@ -155,7 +165,9 @@ public class PostService {
                 List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
                 List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
                 dtos.get(i).setSteps(stepDtos);
-
+            } else {
+                dtos.get(i).setIngredients(new ArrayList<>());
+                dtos.get(i).setSteps(new ArrayList<>());
             }
         }
 
@@ -196,6 +208,16 @@ public class PostService {
             else
                 dtos.get(i).setPostLikeYn("N");
 
+            // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
+            if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
+                    userRecipeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
+                dtos.get(i).setSaveRecipeYn("Y");
+            else
+                dtos.get(i).setSaveRecipeYn("N");
+
+            Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
+            dtos.get(i).setCommentCnt(commentCnt);
+
             //레시피가 있는 경우 검색
             if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
 
@@ -208,6 +230,9 @@ public class PostService {
                 List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
                 List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
                 dtos.get(i).setSteps(stepDtos);
+            }else {
+                dtos.get(i).setIngredients(new ArrayList<>());
+                dtos.get(i).setSteps(new ArrayList<>());
             }
         }
         return new PageImpl<>(dtos, pageable, posts.getTotalElements());
@@ -328,15 +353,15 @@ public class PostService {
         // 부모 댓글 존재하지 않을때
         // 대댓글에 대댓글을 달려고 할 때
         // 부모 댓글과 대댓글의 게시물 id가 다를 때
-        if(postCommentReqDto.getPostCommentParentId() != 0) {
+        if (postCommentReqDto.getPostCommentParentId() != 0) {
             PostComment parentComment = postCommentRepository
                     .findById(postCommentReqDto.getPostCommentParentId())
                     .orElseThrow(() -> new CommonNotFoundException("parentCommentNotFound"));
 
-            if(parentComment.getPostCommentParentId() != 0)
+            if (parentComment.getPostCommentParentId() != 0)
                 throw new CommonBadRequestException("commentNotAllowed");
 
-            if(parentComment.getPost().getId() != postId)
+            if (parentComment.getPost().getId() != postId)
                 throw new CommonBadRequestException("commentPostNotEqual");
         }
 
@@ -355,32 +380,39 @@ public class PostService {
         Page<Post> posts = postRepository.getFollowingPosts(pageable, email);
         List<Post> postList = posts.getContent();
         List<PostResDto> dtos = posts.stream().map(PostResDto::new).collect(Collectors.toList());
-        
-        for(int i = 0; i<dtos.size(); i++){
-            
+
+        for (int i = 0; i < dtos.size(); i++) {
+
             //image 매칭
             List<PostImage> images = postList.get(i).getImages();
             List<PostImageDto> imageDtos = images.stream().map(PostImageDto::new).collect(Collectors.toList());
             dtos.get(i).setImages(imageDtos);
-            
+
             //alcoholTag 매칭
             List<AlcoholTag> alcoholTags = postList.get(i).getAlcoholTags();
             List<AlcoholTagDto> alcoholTagDtos = alcoholTags.stream().map(AlcoholTagDto::new).collect(Collectors.toList());
             dtos.get(i).setAlcoholTags(alcoholTagDtos);
 
             //게시글 좋아요여부 확인
-            if(postLikeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent()){
+            if (postLikeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent()) {
                 dtos.get(i).setPostLikeYn("Y");
-            }else{
+            } else {
                 dtos.get(i).setPostLikeYn("N");
             }
+
+            // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
+            if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
+                    userRecipeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
+                dtos.get(i).setSaveRecipeYn("Y");
+            else
+                dtos.get(i).setSaveRecipeYn("N");
 
             //댓글 수 세팅
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
             //레시피가 있는 경우 검색
-            if(dtos.get(i).getHaveRecipeYn().equals("Y")){
+            if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
                 //ingredient 검색 후 매칭
                 List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
                 List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
@@ -390,9 +422,35 @@ public class PostService {
                 List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
                 List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
                 dtos.get(i).setSteps(stepDtos);
+            }else {
+                dtos.get(i).setIngredients(new ArrayList<>());
+                dtos.get(i).setSteps(new ArrayList<>());
             }
         }
 
         return new PageImpl<>(dtos, pageable, posts.getTotalElements());
+    }
+
+    @Transactional
+    public void changeSaveRecipe(String email, Long alcoholTagId) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        AlcoholTag alcoholTag = alcoholTagRepository.findById(alcoholTagId).orElseThrow(() -> new CommonNotFoundException("alcoholTagNotFound"));
+
+        // 만약 해당 술 태그 (레시피가) 가 저장되지 않은거라면
+        if (!userRecipeRepository.existsByAlcoholTagAndUser(alcoholTag, user)) {
+
+            // 새롭게 저장 한다.
+            UserRecipe userRecipe = UserRecipe.builder()
+                    .post(alcoholTag.getPost())
+                    .alcoholTag(alcoholTag)
+                    .user(user)
+                    .build();
+
+            userRecipeRepository.save(userRecipe);
+        } else {
+            // 이미 저장된 레시피일경우 삭제하자
+            UserRecipe userRecipe = userRecipeRepository.findByAlcoholTagAndUser(alcoholTag, user);
+            userRecipeRepository.delete(userRecipe);
+        }
     }
 }

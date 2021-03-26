@@ -34,4 +34,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "where f.user.email = :email " +
             "order by p.createdDate desc ")
     Page<Post> getFollowingPosts(Pageable pageable, @Param("email") String email);
+
+    @Query("select p from Post p where p.haveRecipeYn = 'Y' and p.user.email = :email")
+    List<Post> getUserRecipePosts(@Param("email") String email);
 }

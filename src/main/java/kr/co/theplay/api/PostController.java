@@ -188,4 +188,22 @@ public class PostController {
         SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "레시피 저장안/삭제", notes = "레시피를 저장 혹은 저장된 레시피를 삭제한다.")
+    @PostMapping(value = "/recipe/{alcoholTagId}")
+    public ResponseEntity<CommonResult> changeSaveRecipe (@PathVariable Long alcoholTagId){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        postService.changeSaveRecipe(email, alcoholTagId);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
 }

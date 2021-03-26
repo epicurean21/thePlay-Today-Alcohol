@@ -25,7 +25,7 @@ public class PostResDto {
     @ApiModelProperty(value = "유저닉네임", dataType = "String", required = true, example = "신나는칵테일녀")
     private String nickname;
 
-    @ApiModelProperty(value="게시글 내용", dataType="String", required=true, example="오늘은 오랜만에 보드카 마신 날~")
+    @ApiModelProperty(value = "게시글 내용", dataType = "String", required = true, example = "오늘은 오랜만에 보드카 마신 날~")
     private String content;
 
     @ApiModelProperty(value = "레시피 존재 여부", dataType = "String", required = true, example = "Y")
@@ -33,6 +33,9 @@ public class PostResDto {
 
     @ApiModelProperty(value = "게시물 좋아요 여부", dataType = "String", required = true, example = "Y")
     private String postLikeYn;
+
+    @ApiModelProperty(value = "게시글 레시피 저장 여부", dataType = "String", required = true, example = "Y")
+    private String saveRecipeYn;
 
     @ApiModelProperty(value = "게시글 댓글 개수", dataType = "Integer", required = true, example = "2")
     private Long commentCnt;
@@ -54,13 +57,14 @@ public class PostResDto {
 
     @Builder
     public PostResDto(Long postId, Long userId, String nickname, String content, LocalDateTime createdDate,
-                      String haveRecipeYn, String postLikeYn, Long commentCnt, List<PostImageDto> images, List<AlcoholTagDto> alcoholTags,
-                      List<RecipeIngredientDto> ingredients, List<RecipeStepDto> steps){
+                      String haveRecipeYn, String postLikeYn, String saveRecipeYn, Long commentCnt, List<PostImageDto> images, List<AlcoholTagDto> alcoholTags,
+                      List<RecipeIngredientDto> ingredients, List<RecipeStepDto> steps) {
         this.postId = postId;
         this.userId = userId;
         this.nickname = nickname;
         this.content = content;
         this.haveRecipeYn = haveRecipeYn;
+        this.saveRecipeYn = saveRecipeYn;
         this.postLikeYn = postLikeYn;
         this.commentCnt = commentCnt;
         this.createdDate = createdDate;
@@ -70,7 +74,7 @@ public class PostResDto {
         this.steps = steps;
     }
 
-    public PostResDto (Post post){
+    public PostResDto(Post post) {
         this.postId = post.getId();
         this.userId = post.getUser().getId();
         this.nickname = post.getUser().getNickname();

@@ -222,11 +222,11 @@ public class UserService {
     }
 
     public UserMainInfoDto getUserMainInfo(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        //User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         List<Post> postCount = postRepository.findByUserEmail(email);
         List<Follow> followerCount = followRepository.findFollowersByUser(email);
         List<PostLike> likesCount = postLikeRepository.findByUserEmail(email);
-        List<RecipeIngredient> recipesCount = recipeIngredientRepository.findByUserEmail(email);
+        List<Post> recipesCount = postRepository.getUserRecipePosts(email);
         UserMainInfoDto userMainInfoDto = UserMainInfoDto.builder().posts(postCount.stream().count()).followers(followerCount.stream().count()).likes(likesCount.stream().count()).recipes(recipesCount.stream().count()).build();
         return userMainInfoDto;
     }
