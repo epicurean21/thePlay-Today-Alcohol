@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class UserMainInfoDto {
+    @ApiModelProperty(value = "닉네임", dataType = "Long", required = true, example = "우아한 보드카")
+    private String nickname;
+
     @ApiModelProperty(value = "게시물 수", dataType = "Long", required = true, example = "233")
     private Long posts;
 
@@ -21,7 +24,8 @@ public class UserMainInfoDto {
     private Long recipes;
 
     @Builder
-    public UserMainInfoDto(Long posts, Long likes, Long followers, Long recipes) {
+    public UserMainInfoDto(String nickname, Long posts, Long likes, Long followers, Long recipes) {
+        this.nickname = nickname;
         this.posts = posts;
         this.likes = likes;
         this.followers = followers;

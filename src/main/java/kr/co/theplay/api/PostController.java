@@ -175,7 +175,7 @@ public class PostController {
     })
     @ApiOperation(value = "팔로잉 피드 게시글 조회", notes = "로그인한 사용자가 팔로잉하는 유저의 게시글 목록을 최신순으로 조회한다.")
     @GetMapping(value = "/following-posts")
-    public ResponseEntity<SingleResult<Page<PostResDto>>> getFollowingPosts(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size){
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getFollowingPosts(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -194,7 +194,7 @@ public class PostController {
     })
     @ApiOperation(value = "레시피 저장/삭제", notes = "레시피를 저장 혹은 저장된 레시피를 삭제한다.")
     @PostMapping(value = "/recipe/{alcoholTagId}")
-    public ResponseEntity<CommonResult> changeSaveRecipe (@PathVariable Long alcoholTagId){
+    public ResponseEntity<CommonResult> changeSaveRecipe(@PathVariable Long alcoholTagId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -224,5 +224,43 @@ public class PostController {
         Page<PostResDto> postResDtos = postService.getUserLikedPosts(email, number, size);
         SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "선택 유저 메인 화면", notes = "선택한 유저의 메인 화면에서 게시글들을 불러온다")
+    @GetMapping(value = "/user/{userId}/posts")
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getOtherUserPosts(@PathVariable Long userId,
+                                                                            @RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        Page<PostResDto> postResDtos = postService.getOtherUserPosts(email, userId, number, size);
+        SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "게시글 좋아요 / 좋아요 취소", notes = "게시글을 좋아요 혹은 좋아요를 취소한다.")
+    @PostMapping(value = "/post/{postId}/like")
+    public ResponseEntity<CommonResult> changeLikePost(@PathVariable Long postId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        postService.changeLikePost(email, postId);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 }

@@ -222,12 +222,34 @@ public class UserService {
     }
 
     public UserMainInfoDto getUserMainInfo(String email) {
-        //User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         List<Post> postCount = postRepository.findByUserEmail(email);
         List<Follow> followerCount = followRepository.findFollowersByUser(email);
         List<PostLike> likesCount = postLikeRepository.findByUserEmail(email);
         List<Post> recipesCount = postRepository.getUserRecipePosts(email);
-        UserMainInfoDto userMainInfoDto = UserMainInfoDto.builder().posts(postCount.stream().count()).followers(followerCount.stream().count()).likes(likesCount.stream().count()).recipes(recipesCount.stream().count()).build();
+        UserMainInfoDto userMainInfoDto = UserMainInfoDto.builder().nickname(user.getNickname()).posts(postCount.stream().count()).followers(followerCount.stream().count()).likes(likesCount.stream().count()).recipes(recipesCount.stream().count()).build();
+        return userMainInfoDto;
+    }
+
+    public UserMainInfoDto getOtherUserIngo(String email, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+
+        // 게시물은 가져온다
+        List<Post> postCount = postRepository.findByUserEmail(user.getEmail());
+
+        UserMainInfoDto userMainInfoDto = new UserMainInfoDto();
+
+        // 혹시나.. 토큰 사용자가 나의 정보를 이 API 로 접근하면? 예외처리도 괜찮지만 그냥 비공개 상관없이 보여주도록..
+        if (user.getPrivacyYn().equals("N") || user.getEmail().equals(email)) { // 비공개 계정이 아니라면
+            List<Follow> followerCount = followRepository.findFollowersByUser(user.getEmail());
+            List<PostLike> likesCount = postLikeRepository.findByUserEmail(user.getEmail());
+            List<Post> recipesCount = postRepository.getUserRecipePosts(user.getEmail());
+            userMainInfoDto = UserMainInfoDto.builder().nickname(user.getNickname()).posts(postCount.stream().count()).followers(followerCount.stream().count()).likes(likesCount.stream().count()).recipes(recipesCount.stream().count()).build();
+        } else {
+            Long empty = (long)-1;
+            userMainInfoDto = UserMainInfoDto.builder().nickname(user.getNickname()).posts(postCount.stream().count()).followers(empty).likes(empty).recipes(empty).build();
+        }
+
         return userMainInfoDto;
     }
 }

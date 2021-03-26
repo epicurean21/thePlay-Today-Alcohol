@@ -1,5 +1,6 @@
 package kr.co.theplay.domain.post;
 
+import kr.co.theplay.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,8 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
     Page<Post> findPostLikeByUserEmail(Pageable pageable, @Param("email") String email);
 
     Optional<PostLike> findByPostIdAndUserEmail(Long id, String email);
+
+    PostLike findByPostAndUser(Post post, User user);
+
+    boolean existsByPostAndUser(Post post, User user);
 }

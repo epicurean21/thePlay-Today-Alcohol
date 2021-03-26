@@ -16,6 +16,7 @@ import kr.co.theplay.service.notice.NoticeService;
 import kr.co.theplay.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -245,6 +246,24 @@ public class UserController {
         }
 
         UserMainInfoDto userMainInfoDto = userService.getUserMainInfo(email);
+        SingleResult<UserMainInfoDto> result = responseService.getSingleResult(userMainInfoDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "선택 유저 메인 상단 정보", notes = "선택 유저 메인 상단 정보 [게시물, 좋아요, 팔로워, 나의 레시피]")
+    @GetMapping(value = "/user/{userId}/main-info")
+    public ResponseEntity<SingleResult<UserMainInfoDto>> getOtherUserInfo(@PathVariable Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        UserMainInfoDto userMainInfoDto = userService.getOtherUserIngo(email, userId);
         SingleResult<UserMainInfoDto> result = responseService.getSingleResult(userMainInfoDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

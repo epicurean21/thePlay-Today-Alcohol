@@ -474,6 +474,28 @@ public class PostService {
         }
     }
 
+    @Transactional
+    public void changeLikePost(String email, Long postId) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
+
+        // 만약 해당 게시물에 좋아요를 누르지 않았다면
+        if (!postLikeRepository.existsByPostAndUser(post, user)) {
+
+            // 새롭게 좋아요를 누른다
+            PostLike postLike = PostLike.builder()
+                    .post(post)
+                    .user(user)
+                    .build();
+
+            postLikeRepository.save(postLike);
+        } else {
+            // 이미 저장된 레시피일경우 삭제하자
+            PostLike postLike = postLikeRepository.findByPostAndUser(post, user);
+            postLikeRepository.delete(postLike);
+        }
+    }
+
     public Page<PostResDto> getUserLikedPosts(String email, int number, int size) {
 
         Pageable pageable = PageRequest.of(number, size);
@@ -537,6 +559,74 @@ public class PostService {
             }
         }
 
+        return new PageImpl<>(dtos, pageable, posts.getTotalElements());
+    }
+
+    public Page<PostResDto> getOtherUserPosts(String email, Long userId, int number, int size) {
+        // 다른 사람의 메인 게시물들을 가져온다 /user/{userId}/posts
+        User user = userRepository.findById(userId).orElseThrow(()-> new CommonNotFoundException("userNotFound"));
+
+        // Service에서 pageNumber와 size로 pageRequest를 생성 Pageable로 ? PageRequest는 Pageable의 구현채
+        Pageable pageable = PageRequest.of(number, size);
+        Page<Post> posts = postRepository.getUserLastestPosts(user.getEmail(), pageable);
+        List<Post> postList = posts.getContent();
+
+        // return 할 dto 형식 PostResDto로 Mapping ? 한다.
+        List<PostResDto> dtos = posts.stream().map(PostResDto::new).collect(Collectors.toList());
+
+        // List 안에 dto의 개수만큼 for 문
+        for (int i = 0; i < dtos.size(); i++) {
+            //image 매칭
+            // i번 째 postList 안에 이미지들을 가져온다.
+            List<PostImage> images = postList.get(i).getImages();
+            List<PostImageDto> imageDtos = images.stream().map(PostImageDto::new).collect(Collectors.toList());
+            dtos.get(i).setImages(imageDtos);
+
+            //alcoholTag 매칭
+            List<AlcoholTag> alcoholTags = postList.get(i).getAlcoholTags();
+            List<AlcoholTagDto> alcoholTagDtos = alcoholTags.stream().map(AlcoholTagDto::new).collect(Collectors.toList());
+            dtos.get(i).setAlcoholTags(alcoholTagDtos);
+
+            // 게시물 좋아요 여부
+            if (postLikeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
+                dtos.get(i).setPostLikeYn("Y");
+            else
+                dtos.get(i).setPostLikeYn("N");
+
+            // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
+            if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
+                    userRecipeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
+                dtos.get(i).setSaveRecipeYn("Y");
+            else
+                dtos.get(i).setSaveRecipeYn("N");
+
+            Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
+            dtos.get(i).setCommentCnt(commentCnt);
+
+            if (commentCnt != 0) {
+                PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setComment(comment.getContent());
+            } else {
+                dtos.get(i).setComment("N");
+            }
+
+            //레시피가 있는 경우 검색
+            if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
+
+                //ingredient 검색 후 매칭
+                List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
+                dtos.get(i).setIngredients(ingredientDtos);
+
+                //step 검색 후 매칭
+                List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
+                dtos.get(i).setSteps(stepDtos);
+            } else {
+                dtos.get(i).setIngredients(new ArrayList<>());
+                dtos.get(i).setSteps(new ArrayList<>());
+            }
+        }
         return new PageImpl<>(dtos, pageable, posts.getTotalElements());
     }
 }
