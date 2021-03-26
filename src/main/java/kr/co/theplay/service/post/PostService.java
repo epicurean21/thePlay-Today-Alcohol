@@ -154,6 +154,13 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
+            if (commentCnt != 0) {
+                PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setComment(comment.getContent());
+            } else {
+                dtos.get(i).setComment("N");
+            }
+
             //레시피가 있는 경우 검색
             if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
                 //ingredient 검색 후 매칭
@@ -218,6 +225,13 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
+            if (commentCnt != 0) {
+                PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setComment(comment.getContent());
+            } else {
+                dtos.get(i).setComment("N");
+            }
+
             //레시피가 있는 경우 검색
             if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
 
@@ -230,7 +244,7 @@ public class PostService {
                 List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
                 List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
                 dtos.get(i).setSteps(stepDtos);
-            }else {
+            } else {
                 dtos.get(i).setIngredients(new ArrayList<>());
                 dtos.get(i).setSteps(new ArrayList<>());
             }
@@ -411,6 +425,13 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
+            if (commentCnt != 0) {
+                PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setComment(comment.getContent());
+            } else {
+                dtos.get(i).setComment("N");
+            }
+
             //레시피가 있는 경우 검색
             if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
                 //ingredient 검색 후 매칭
@@ -422,7 +443,7 @@ public class PostService {
                 List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
                 List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
                 dtos.get(i).setSteps(stepDtos);
-            }else {
+            } else {
                 dtos.get(i).setIngredients(new ArrayList<>());
                 dtos.get(i).setSteps(new ArrayList<>());
             }

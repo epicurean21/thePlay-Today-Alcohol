@@ -22,4 +22,6 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Long> 
     @Query("select count(pc) from PostComment pc where pc.post.id =:postId")
     Long getCountOfPostComment(@Param("postId") Long postId);
 
+    PostComment findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(Long postId, Long postCommentParentId);
+
 }
