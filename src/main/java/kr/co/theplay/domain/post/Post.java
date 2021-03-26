@@ -41,9 +41,12 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private List<RecipeStep> steps;
 
+    @OneToMany(mappedBy = "post")
+    private List<PostComment> postComments;
+
     @Builder
     public Post(Long id, User user, String haveRecipeYn, String content, List<PostImage> images,
-                List<AlcoholTag> alcoholTags, List<RecipeIngredient> ingredients, List<RecipeStep> steps){
+                List<AlcoholTag> alcoholTags, List<RecipeIngredient> ingredients, List<RecipeStep> steps, List<PostComment> postComments){
         this.id = id;
         this.user = user;
         this.haveRecipeYn = haveRecipeYn;
@@ -52,6 +55,7 @@ public class Post extends BaseTimeEntity {
         this.alcoholTags = alcoholTags;
         this.ingredients = ingredients;
         this.steps = steps;
+        this.postComments = postComments;
     }
 
     public void changeUser(User user){

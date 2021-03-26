@@ -138,6 +138,9 @@ public class PostService {
             else
                 dtos.get(i).setPostLikeYn("N");
 
+            Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
+            dtos.get(i).setCommentCnt(commentCnt);
+
             //레시피가 있는 경우 검색
             if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
                 //ingredient 검색 후 매칭

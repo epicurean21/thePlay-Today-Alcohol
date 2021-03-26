@@ -34,6 +34,9 @@ public class PostResDto {
     @ApiModelProperty(value = "게시물 좋아요 여부", dataType = "String", required = true, example = "Y")
     private String postLikeYn;
 
+    @ApiModelProperty(value = "게시글 댓글 개수", dataType = "Integer", required = true, example = "2")
+    private Long commentCnt;
+
     @ApiModelProperty(value = "생성일자", dataType = "LocalDateTime", required = true)
     private LocalDateTime createdDate;
 
@@ -51,14 +54,15 @@ public class PostResDto {
 
     @Builder
     public PostResDto(Long postId, Long userId, String nickname, String content, LocalDateTime createdDate,
-                      String haveRecipeYn, String postLikeYn, List<PostImageDto> images, List<AlcoholTagDto> alcoholTags,
+                      String haveRecipeYn, String postLikeYn, Long commentCnt, List<PostImageDto> images, List<AlcoholTagDto> alcoholTags,
                       List<RecipeIngredientDto> ingredients, List<RecipeStepDto> steps){
         this.postId = postId;
         this.userId = userId;
         this.nickname = nickname;
         this.content = content;
-        this.postLikeYn = postLikeYn;
         this.haveRecipeYn = haveRecipeYn;
+        this.postLikeYn = postLikeYn;
+        this.commentCnt = commentCnt;
         this.createdDate = createdDate;
         this.images = images;
         this.alcoholTags = alcoholTags;
