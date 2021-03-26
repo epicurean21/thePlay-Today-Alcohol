@@ -173,7 +173,7 @@ public class PostController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
-    @ApiOperation(value = "팔로잉 피득 게시글 조회", notes = "로그인한 사용자가 팔로잉하는 유저의 게시글 목록을 최신순으로 조회한다.")
+    @ApiOperation(value = "팔로잉 피드 게시글 조회", notes = "로그인한 사용자가 팔로잉하는 유저의 게시글 목록을 최신순으로 조회한다.")
     @GetMapping(value = "/following-posts")
     public ResponseEntity<SingleResult<Page<PostResDto>>> getFollowingPosts(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size){
 
@@ -192,7 +192,7 @@ public class PostController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
-    @ApiOperation(value = "레시피 저장안/삭제", notes = "레시피를 저장 혹은 저장된 레시피를 삭제한다.")
+    @ApiOperation(value = "레시피 저장/삭제", notes = "레시피를 저장 혹은 저장된 레시피를 삭제한다.")
     @PostMapping(value = "/recipe/{alcoholTagId}")
     public ResponseEntity<CommonResult> changeSaveRecipe (@PathVariable Long alcoholTagId){
 
@@ -205,5 +205,24 @@ public class PostController {
 
         postService.changeSaveRecipe(email, alcoholTagId);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "유저 좋아요 누른 게시글", notes = "유저의 메인 화면에서 좋아요 누른 게시물들을 불러온다")
+    @GetMapping(value = "/user/posts/like")
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getUserLikedPosts(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        Page<PostResDto> postResDtos = postService.getUserLikedPosts(email, number, size);
+        SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

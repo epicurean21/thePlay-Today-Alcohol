@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.w3c.dom.ls.LSInput;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -473,5 +472,71 @@ public class PostService {
             UserRecipe userRecipe = userRecipeRepository.findByAlcoholTagAndUser(alcoholTag, user);
             userRecipeRepository.delete(userRecipe);
         }
+    }
+
+    public Page<PostResDto> getUserLikedPosts(String email, int number, int size) {
+
+        Pageable pageable = PageRequest.of(number, size);
+
+        // 좋아요 누른 게시글들 최신순으로 가져온다, Paging 처리
+        Page<Post> posts = postLikeRepository.findPostLikeByUserEmail(pageable, email);
+        List<Post> postList = posts.getContent();
+        List<PostResDto> dtos = posts.stream().map(PostResDto::new).collect(Collectors.toList());
+
+        for (int i = 0; i < dtos.size(); i++) {
+            //image 매칭
+            List<PostImage> images = postList.get(i).getImages();
+            List<PostImageDto> imageDtos = images.stream().map(PostImageDto::new).collect(Collectors.toList());
+            dtos.get(i).setImages(imageDtos);
+
+            //alcoholTag 매칭
+            List<AlcoholTag> alcoholTags = postList.get(i).getAlcoholTags();
+            List<AlcoholTagDto> alcoholTagDtos = alcoholTags.stream().map(AlcoholTagDto::new).collect(Collectors.toList());
+            dtos.get(i).setAlcoholTags(alcoholTagDtos);
+
+            //게시글 좋아요여부 확인
+            if (postLikeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent()) {
+                dtos.get(i).setPostLikeYn("Y");
+            } else {
+                dtos.get(i).setPostLikeYn("N");
+            }
+
+            // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
+            if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
+                    userRecipeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
+                dtos.get(i).setSaveRecipeYn("Y");
+            else
+                dtos.get(i).setSaveRecipeYn("N");
+
+            //댓글 수 세팅
+            Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
+            dtos.get(i).setCommentCnt(commentCnt);
+
+            // 댓글이 0개가 아니라면 최신 댓글을 한개 가져온다. 없다면 N으로 지정하자
+            if (commentCnt != 0) {
+                PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setComment(comment.getContent());
+            } else {
+                dtos.get(i).setComment("N");
+            }
+
+            //레시피가 있는 경우 검색
+            if (dtos.get(i).getHaveRecipeYn().equals("Y")) {
+                //ingredient 검색 후 매칭
+                List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
+                dtos.get(i).setIngredients(ingredientDtos);
+
+                //step 검색 후 매칭
+                List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
+                dtos.get(i).setSteps(stepDtos);
+            } else {
+                dtos.get(i).setIngredients(new ArrayList<>());
+                dtos.get(i).setSteps(new ArrayList<>());
+            }
+        }
+
+        return new PageImpl<>(dtos, pageable, posts.getTotalElements());
     }
 }
