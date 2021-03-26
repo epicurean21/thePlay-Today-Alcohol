@@ -15,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.w3c.dom.ls.LSInput;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,6 +140,7 @@ public class PostService {
             else
                 dtos.get(i).setPostLikeYn("N");
 
+            //댓글 개수 세팅
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
@@ -344,5 +347,52 @@ public class PostService {
                 .content(postCommentReqDto.getContent())
                 .build();
         postCommentRepository.save(postComment);
+    }
+
+    public Page<PostResDto> getFollowingPosts(String email, int number, int size) {
+
+        Pageable pageable = PageRequest.of(number, size);
+        Page<Post> posts = postRepository.getFollowingPosts(pageable, email);
+        List<Post> postList = posts.getContent();
+        List<PostResDto> dtos = posts.stream().map(PostResDto::new).collect(Collectors.toList());
+        
+        for(int i = 0; i<dtos.size(); i++){
+            
+            //image 매칭
+            List<PostImage> images = postList.get(i).getImages();
+            List<PostImageDto> imageDtos = images.stream().map(PostImageDto::new).collect(Collectors.toList());
+            dtos.get(i).setImages(imageDtos);
+            
+            //alcoholTag 매칭
+            List<AlcoholTag> alcoholTags = postList.get(i).getAlcoholTags();
+            List<AlcoholTagDto> alcoholTagDtos = alcoholTags.stream().map(AlcoholTagDto::new).collect(Collectors.toList());
+            dtos.get(i).setAlcoholTags(alcoholTagDtos);
+
+            //게시글 좋아요여부 확인
+            if(postLikeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent()){
+                dtos.get(i).setPostLikeYn("Y");
+            }else{
+                dtos.get(i).setPostLikeYn("N");
+            }
+
+            //댓글 수 세팅
+            Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
+            dtos.get(i).setCommentCnt(commentCnt);
+
+            //레시피가 있는 경우 검색
+            if(dtos.get(i).getHaveRecipeYn().equals("Y")){
+                //ingredient 검색 후 매칭
+                List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
+                dtos.get(i).setIngredients(ingredientDtos);
+
+                //step 검색 후 매칭
+                List<RecipeStep> steps = recipeStepRepository.findByPostId(dtos.get(i).getPostId());
+                List<RecipeStepDto> stepDtos = steps.stream().map(RecipeStepDto::new).collect(Collectors.toList());
+                dtos.get(i).setSteps(stepDtos);
+            }
+        }
+
+        return new PageImpl<>(dtos, pageable, posts.getTotalElements());
     }
 }

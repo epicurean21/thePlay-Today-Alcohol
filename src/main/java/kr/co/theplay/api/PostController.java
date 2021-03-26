@@ -1,5 +1,6 @@
 package kr.co.theplay.api;
 
+import com.amazonaws.util.Platform;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -75,7 +76,7 @@ public class PostController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
-    @ApiOperation(value = "메인 피드 게시글 조회", notes = "메인 피드에서 게시글을 조회한다,")
+    @ApiOperation(value = "메인 피드 게시글 조회", notes = "메인 피드에서 게시글을 최신순으로 조회한다.")
     @GetMapping(value = "/main-posts")
     public ResponseEntity<SingleResult<Page<PostResDto>>> getPostsForMain(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
 
@@ -167,5 +168,24 @@ public class PostController {
 
         postService.updatePost(email, postId, postReqDto);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "팔로잉 피득 게시글 조회", notes = "로그인한 사용자가 팔로잉하는 유저의 게시글 목록을 최신순으로 조회한다.")
+    @GetMapping(value = "/following-posts")
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getFollowingPosts(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        Page<PostResDto> postResDtos = postService.getFollowingPosts(email, number, size);
+        SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

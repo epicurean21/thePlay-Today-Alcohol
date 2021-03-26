@@ -26,4 +26,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "where p.user.email = :email " +
             "order by p.createdDate desc")
     Page<Post> getUserLastestPosts(@Param("email") String email, Pageable pageable);
+
+    @Query(value = "select distinct p from Post p " +
+            "inner join PostImage pi on pi.post.id = p.id " +
+            "inner join AlcoholTag at on at.post.id = p.id " +
+            "inner join Follow f on f.userFollow = p.user " +
+            "where f.user.email = :email " +
+            "order by p.createdDate desc ")
+    Page<Post> getFollowingPosts(Pageable pageable, @Param("email") String email);
 }
