@@ -1,6 +1,5 @@
-package kr.co.theplay.dto.Post;
+package kr.co.theplay.dto.post;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;

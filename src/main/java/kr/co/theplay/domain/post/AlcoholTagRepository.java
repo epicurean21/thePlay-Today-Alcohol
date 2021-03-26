@@ -9,4 +9,6 @@ import java.util.List;
 public interface AlcoholTagRepository extends JpaRepository <AlcoholTag, Long> {
 
     List<AlcoholTag> findByPost(Post post);
+
+    List<AlcoholTag> findByName(String tagName);
 }

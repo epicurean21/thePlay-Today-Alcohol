@@ -1,7 +1,6 @@
-package kr.co.theplay.dto.Post;
+package kr.co.theplay.dto.post;
 
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.models.auth.In;
 import kr.co.theplay.common.IconKind;
 import kr.co.theplay.domain.post.RecipeIngredient;
 import lombok.Builder;

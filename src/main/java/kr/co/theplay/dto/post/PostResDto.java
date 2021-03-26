@@ -1,4 +1,4 @@
-package kr.co.theplay.dto.Post;
+package kr.co.theplay.dto.post;
 
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.theplay.domain.post.Post;
@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

@@ -5,7 +5,7 @@ import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRecipe;
 import kr.co.theplay.domain.user.UserRecipeRepository;
 import kr.co.theplay.domain.user.UserRepository;
-import kr.co.theplay.dto.Post.*;
+import kr.co.theplay.dto.post.*;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import kr.co.theplay.service.zzz.S3Service;
@@ -17,9 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.w3c.dom.ls.LSInput;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -154,6 +152,7 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
+            //대표 댓글 세팅
             if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
                 dtos.get(i).setComment(comment.getContent());
@@ -425,6 +424,7 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
+            //대표 댓글 세팅
             if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
                 dtos.get(i).setComment(comment.getContent());

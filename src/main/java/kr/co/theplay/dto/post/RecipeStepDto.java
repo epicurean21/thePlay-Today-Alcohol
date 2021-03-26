@@ -1,4 +1,4 @@
-package kr.co.theplay.dto.Post;
+package kr.co.theplay.dto.post;
 
 import io.swagger.annotations.ApiModelProperty;
 import kr.co.theplay.domain.post.RecipeStep;
