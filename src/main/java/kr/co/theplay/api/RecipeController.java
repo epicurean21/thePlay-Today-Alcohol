@@ -35,7 +35,7 @@ public class RecipeController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
-    @ApiOperation(value = "메인 피드 게시글 조회", notes = "메인 피드에서 게시글을 최신순으로 조회한다.")
+    @ApiOperation(value = "인기 레시피 조회" , notes = "인기 레시피의 태그이름들과 첫 레시피 재료, 이미지 10개를 조회한다.")
     @GetMapping(value = "/popular-recipes")
     public ResponseEntity<SingleResult<Page<PopularRecipeDto>>> getPopularRecipes(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size){
 
