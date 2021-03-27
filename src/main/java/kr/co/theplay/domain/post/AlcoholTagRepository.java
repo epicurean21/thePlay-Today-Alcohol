@@ -32,7 +32,7 @@ public interface AlcoholTagRepository extends JpaRepository <AlcoholTag, Long> {
             value = "select at.post_id, count(pl.id) as cnt, pi.file_path " +
                     "from alcohol_tag at " +
                     "inner join post p on at.post_id = p.id " +
-                    "inner join post_like pl on p.id = pl.post_id " +
+                    "left outer join post_like pl on p.id = pl.post_id " +
                     "inner join post_image pi on p.id = pi.post_id " +
                     "where at.recipe_yn = 'Y' and at.name = :tagName and pi.number = 0 " +
                     "group by pl.post_id " +
