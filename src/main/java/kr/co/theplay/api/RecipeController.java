@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import kr.co.theplay.dto.post.PostResDto;
 import kr.co.theplay.dto.recipe.PopularRecipeDto;
 import kr.co.theplay.dto.recipe.UserRecipeResDto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
@@ -19,10 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -89,6 +87,27 @@ public class RecipeController {
 
         List<UserRecipeResDto> userRecipeResDtos = recipeService.getUserSearchRecipe(email, recipeName);
         ListResult<UserRecipeResDto> result = responseService.getListResult(userRecipeResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "인기 레시피 모두 보기", notes = "인기 레시피 중 특정 태그에 대해 모든 레시피를 조회한다.")
+    @GetMapping(value = "/popular-recipes/{tagName}")
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getPopularRecipesByTagName(
+            @PathVariable String tagName, @RequestParam("pageNumber") int number, @RequestParam("pageSize") int size){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        Page<PostResDto> postResDtos = recipeService.getPopularRecipesByTagName(email, tagName, number, size);
+        SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
+
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

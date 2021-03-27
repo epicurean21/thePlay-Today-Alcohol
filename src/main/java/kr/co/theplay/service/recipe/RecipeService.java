@@ -5,8 +5,7 @@ import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRecipe;
 import kr.co.theplay.domain.user.UserRecipeRepository;
 import kr.co.theplay.domain.user.UserRepository;
-import kr.co.theplay.dto.post.AlcoholTagDto;
-import kr.co.theplay.dto.post.RecipeIngredientDto;
+import kr.co.theplay.dto.post.*;
 import kr.co.theplay.dto.recipe.PopularRecipeDto;
 import kr.co.theplay.dto.recipe.UserRecipeResDto;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
@@ -16,12 +15,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -33,6 +34,9 @@ public class RecipeService {
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final UserRepository userRepository;
     private final UserRecipeRepository userRecipeRepository;
+    private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final PostCommentRepository postCommentRepository;
 
     public Page<PopularRecipeDto> getPopularRecipes(int number, int size) {
 
@@ -113,5 +117,70 @@ public class RecipeService {
             dtos.get(i).setIngredients(ingredientDtos);
         }
         return dtos;
+    }
+
+    public Page<PostResDto> getPopularRecipesByTagName(String email, String tagName, int number, int size) {
+
+        Pageable pageable = PageRequest.of(number, size);
+
+        //태그에 해당되는 post에 대해 좋아요 개수와 postId를 인기순 조회 (좋아요 0개도 조회)
+        Page<Object []> postInfos = alcoholTagRepository.findByNameOrderByLikeCnt(tagName, pageable);
+        List<Object []> postInfoList = postInfos.getContent();
+
+        //태그에 해당하는 각 post 정보를 postResDto로 매칭
+        List<PostResDto> dtos = new ArrayList<>();
+
+        for(int i = 0; i < postInfoList.size(); i++){
+
+            Post post = postRepository.getRecipeByPostId( ((BigInteger)postInfoList.get(i)[1]).longValue())
+                    .orElseThrow(() -> new CommonNotFoundException("pageNotFound"));
+            PostResDto dto = new PostResDto(post);
+
+            // 좋아요 여부
+            if(postLikeRepository.findByPostIdAndUserEmail(post.getId(), email).isPresent()){
+                dto.setPostLikeYn("Y");
+            }else{
+                dto.setPostLikeYn("N");
+            }
+
+            // 레시피 저장 여부 (레시피가 있는 애들만 조회된 상태)
+            if(userRecipeRepository.findByPostIdAndUserEmail(post.getId(), email).isPresent()){
+                dto.setSaveRecipeYn("Y");
+            }else{
+                dto.setSaveRecipeYn("N");
+            }
+
+            // 댓글 수
+            Long commentCnt = postCommentRepository.getCountOfPostComment(post.getId());
+            dto.setCommentCnt(commentCnt);
+
+            // 대표댓글
+            if(commentCnt != 0){
+                PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(post.getId(), (long) 0);
+                dto.setComment(comment.getContent());
+            }else{
+                dto.setComment("N");
+            }
+
+            //이미지들
+            List<PostImageDto> imageDtos = post.getImages().stream().map(PostImageDto::new).collect(Collectors.toList());
+            dto.setImages(imageDtos);
+
+            // 술 태그들
+            List<AlcoholTagDto> alcoholTagDtos = post.getAlcoholTags().stream().map(AlcoholTagDto::new).collect(Collectors.toList());
+            dto.setAlcoholTags(alcoholTagDtos);
+
+            // 재료들
+            List<RecipeIngredientDto> ingredientDtos = post.getIngredients().stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
+            dto.setIngredients(ingredientDtos);
+
+            // step들
+            List<RecipeStepDto> stepDtos = post.getSteps().stream().map(RecipeStepDto::new).collect(Collectors.toList());
+            dto.setSteps(stepDtos);
+
+            dtos.add(dto);
+        }
+
+        return new PageImpl<>(dtos, pageable, postInfos.getTotalElements());
     }
 }

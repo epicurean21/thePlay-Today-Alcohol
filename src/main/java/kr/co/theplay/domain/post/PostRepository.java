@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -36,5 +37,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p from Post p where p.haveRecipeYn = 'Y' and p.user.email = :email")
     List<Post> getUserRecipePosts(@Param("email") String email);
+
+    @Query("select distinct p from Post p " +
+            "inner join PostImage pi on pi.post.id = p.id " +
+            "inner join AlcoholTag at on at.post.id = p.id " +
+            "inner join RecipeIngredient ri on ri.post.id = p.id " +
+            "inner join RecipeStep rs on rs.post.id = p.id " +
+            "where p.id = :postId ")
+    Optional<Post> getRecipeByPostId(@Param("postId") Long postId);
 
 }
