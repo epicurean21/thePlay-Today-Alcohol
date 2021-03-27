@@ -457,6 +457,9 @@ public class PostService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         AlcoholTag alcoholTag = alcoholTagRepository.findById(alcoholTagId).orElseThrow(() -> new CommonNotFoundException("alcoholTagNotFound"));
 
+        if (alcoholTag.getRecipeYn().equals("N")) {
+            throw new CommonBadRequestException("alcoholTagNotRecipe");
+        }
         // 만약 해당 술 태그 (레시피가) 가 저장되지 않은거라면
         if (!userRecipeRepository.existsByAlcoholTagAndUser(alcoholTag, user)) {
 
@@ -565,7 +568,7 @@ public class PostService {
 
     public Page<PostResDto> getOtherUserPosts(String email, Long userId, int number, int size) {
         // 다른 사람의 메인 게시물들을 가져온다 /user/{userId}/posts
-        User user = userRepository.findById(userId).orElseThrow(()-> new CommonNotFoundException("userNotFound"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
 
         // Service에서 pageNumber와 size로 pageRequest를 생성 Pageable로 ? PageRequest는 Pageable의 구현채
         Pageable pageable = PageRequest.of(number, size);
