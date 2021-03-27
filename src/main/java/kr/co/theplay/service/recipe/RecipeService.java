@@ -74,7 +74,7 @@ public class RecipeService {
         Pageable pageable = PageRequest.of(number, size);
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-        Page<UserRecipe> userRecipes = userRecipeRepository.findByUserId(pageable, user.getId());
+        Page<UserRecipe> userRecipes = userRecipeRepository.findByUserIdOrderByCreatedDateDesc(pageable, user.getId());
 
         List<UserRecipe> userRecipeList = userRecipes.getContent();
 

@@ -18,5 +18,5 @@ public interface UserRecipeRepository extends JpaRepository<UserRecipe, Long> {
 
     List<UserRecipe> getUserRecipeByUser(User user);
 
-    Page<UserRecipe> findByUserId(Pageable pageable, Long userId);
+    Page<UserRecipe> findByUserIdOrderByCreatedDateDesc(Pageable pageable, Long userId);
 }
