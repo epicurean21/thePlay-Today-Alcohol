@@ -83,6 +83,10 @@ alcoholTagNotRecipe:
   code: "-2011"
   msg: "레시피가 아닌 술 태그 입니다."
 
+recipesNotFound:
+  code: "-2012"
+  msg: "해당 레시피가 존재하지 않습니다."
+
 followedUserNotFound:
   code: "-3000"
   msg: "팔로우 하려는 사용자가 존재하지 않습니다."

@@ -84,7 +84,7 @@ public class RecipeService {
             dtos.get(i).setPostId(userRecipeList.get(i).getPost().getId());
 
             // alcoholTag 매칭 (레시피인것)
-            AlcoholTag alcoholTag = alcoholTagRepository.findByPostId(dtos.get(i).getPostId());
+            AlcoholTag alcoholTag = alcoholTagRepository.findRecipesByPostId(dtos.get(i).getPostId());
             AlcoholTagDto alcoholTagDto = new AlcoholTagDto(alcoholTag);
             dtos.get(i).setAlcoholTag(alcoholTagDto);
 
@@ -94,5 +94,24 @@ public class RecipeService {
         }
 
         return new PageImpl<>(dtos, pageable, userRecipes.getTotalElements());
+    }
+
+    public List<UserRecipeResDto> getUserSearchRecipe(String email, String recipeName) {
+        List<UserRecipe> userRecipes = userRecipeRepository.findByKeyword(email, recipeName);
+        List<UserRecipeResDto> dtos = userRecipes.stream().map(UserRecipeResDto::new).collect(Collectors.toList());
+
+        for (int i = 0; i < userRecipes.size(); i++) {
+            dtos.get(i).setPostId(userRecipes.get(i).getPost().getId());
+
+            // alcoholTag 매칭 (레시피인것)
+            AlcoholTag alcoholTag = alcoholTagRepository.findRecipesByPostId(dtos.get(i).getPostId());
+            AlcoholTagDto alcoholTagDto = new AlcoholTagDto(alcoholTag);
+            dtos.get(i).setAlcoholTag(alcoholTagDto);
+
+            List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
+            List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
+            dtos.get(i).setIngredients(ingredientDtos);
+        }
+        return dtos;
     }
 }

@@ -43,5 +43,5 @@ public interface AlcoholTagRepository extends JpaRepository <AlcoholTag, Long> {
     List <Object [] > find10PopularImagesByAlcoholTagName(@Param("tagName") String tagName);
 
     @Query("select a from AlcoholTag a where a.post.id = :postId and a.recipeYn = 'Y'")
-    AlcoholTag findByPostId(@Param("postId") Long postId);
+    AlcoholTag findRecipesByPostId(@Param("postId") Long postId);
 }
