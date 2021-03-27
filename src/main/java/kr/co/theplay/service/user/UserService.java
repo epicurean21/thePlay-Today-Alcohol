@@ -4,10 +4,7 @@ import kr.co.theplay.api.config.security.JwtTokenProvider;
 import kr.co.theplay.domain.follow.Follow;
 import kr.co.theplay.domain.follow.FollowRepository;
 import kr.co.theplay.domain.post.*;
-import kr.co.theplay.domain.user.User;
-import kr.co.theplay.domain.user.UserRepository;
-import kr.co.theplay.domain.user.UserRole;
-import kr.co.theplay.domain.user.UserRoleRepository;
+import kr.co.theplay.domain.user.*;
 import kr.co.theplay.dto.user.*;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
@@ -30,6 +27,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
+    private final UserRecipeRepository userRecipeRepository;
     private final PostRepository postRepository;
     private final FollowRepository followRepository;
     private final PostLikeRepository postLikeRepository;
@@ -226,7 +224,7 @@ public class UserService {
         List<Post> postCount = postRepository.findByUserEmail(email);
         List<Follow> followerCount = followRepository.findFollowersByUser(email);
         List<PostLike> likesCount = postLikeRepository.findByUserEmail(email);
-        List<Post> recipesCount = postRepository.getUserRecipePosts(email);
+        List<UserRecipe> recipesCount = userRecipeRepository.getUserRecipeByUser(user);
         UserMainInfoDto userMainInfoDto = UserMainInfoDto.builder().nickname(user.getNickname()).posts(postCount.stream().count()).followers(followerCount.stream().count()).likes(likesCount.stream().count()).recipes(recipesCount.stream().count()).build();
         return userMainInfoDto;
     }
@@ -243,10 +241,10 @@ public class UserService {
         if (user.getPrivacyYn().equals("N") || user.getEmail().equals(email)) { // 비공개 계정이 아니라면
             List<Follow> followerCount = followRepository.findFollowersByUser(user.getEmail());
             List<PostLike> likesCount = postLikeRepository.findByUserEmail(user.getEmail());
-            List<Post> recipesCount = postRepository.getUserRecipePosts(user.getEmail());
+            List<UserRecipe> recipesCount = userRecipeRepository.getUserRecipeByUser(user);
             userMainInfoDto = UserMainInfoDto.builder().nickname(user.getNickname()).posts(postCount.stream().count()).followers(followerCount.stream().count()).likes(likesCount.stream().count()).recipes(recipesCount.stream().count()).build();
         } else {
-            Long empty = (long)-1;
+            Long empty = (long) -1;
             userMainInfoDto = UserMainInfoDto.builder().nickname(user.getNickname()).posts(postCount.stream().count()).followers(empty).likes(empty).recipes(empty).build();
         }
 
