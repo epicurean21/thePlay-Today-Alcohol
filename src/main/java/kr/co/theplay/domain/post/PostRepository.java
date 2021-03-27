@@ -37,4 +37,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p from Post p where p.haveRecipeYn = 'Y' and p.user.email = :email")
     List<Post> getUserRecipePosts(@Param("email") String email);
 
+    @Query("SELECT p FROM Post p INNER JOIN AlcoholTag a " +
+            "on p.id = a.post.id " +
+            "WHERE a.name = :recipeName " +
+            "ORDER BY p.createdDate desc ")
+    Page<Post> getSearchPosts(@Param("recipeName") String recipeName, Pageable pageable);
 }
