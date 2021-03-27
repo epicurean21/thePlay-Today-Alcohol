@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.theplay.dto.recipe.PopularRecipeDto;
+import kr.co.theplay.dto.recipe.UserRecipeResDto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.SingleResult;
@@ -49,6 +50,24 @@ public class RecipeController {
         Page<PopularRecipeDto> popularRecipeDtos = recipeService.getPopularRecipes(number, size);
         SingleResult<Page<PopularRecipeDto>> result = responseService.getSingleResult(popularRecipeDtos);
 
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "유저 나의 레시피 목록 불러오기", notes = "유저 나의 레시피 (저장한 레시피) 목록을 페이징으로 가져온다")
+    @GetMapping(value = "/user/recipe")
+    public ResponseEntity<SingleResult<Page<UserRecipeResDto>>> getUserRecipes(@RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        Page<UserRecipeResDto> userRecipeResDtos = recipeService.getUserRecipes(email, number, size);
+        SingleResult<Page<UserRecipeResDto>> result = responseService.getSingleResult(userRecipeResDtos);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
