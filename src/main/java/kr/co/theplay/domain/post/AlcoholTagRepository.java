@@ -35,7 +35,7 @@ public interface AlcoholTagRepository extends JpaRepository <AlcoholTag, Long> {
                     "left outer join post_like pl on p.id = pl.post_id " +
                     "inner join post_image pi on p.id = pi.post_id " +
                     "where at.recipe_yn = 'Y' and at.name = :tagName and pi.number = 0 " +
-                    "group by pl.post_id " +
+                    "group by p.id " +
                     "order by cnt desc " +
                     "limit 10 ",
             nativeQuery = true
