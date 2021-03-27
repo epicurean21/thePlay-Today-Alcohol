@@ -260,4 +260,23 @@ public class PostController {
         postService.changeLikePost(email, postId);
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "게시글 검색", notes = "검색한 게시글을 페이징으로 가져온다")
+    @GetMapping(value = "/posts/search")
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getSearchPosts(@RequestParam("recipeName") String recipeName,
+                                                                         @RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+        Page<PostResDto> postResDtos = postService.getSearchPosts(email, recipeName, number, size);
+        SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
