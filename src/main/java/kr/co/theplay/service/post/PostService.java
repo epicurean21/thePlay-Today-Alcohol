@@ -696,4 +696,24 @@ public class PostService {
         }
         return new PageImpl<>(dtos, pageable, posts.getTotalElements());
     }
+
+    @Transactional
+    public void deletePostById(String email, Long postId) {
+
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
+        if(!post.getUser().getEmail().equals(email)){
+            throw new CommonBadRequestException("accessException");
+        }
+
+        List<PostImage> images = post.getImages();
+        images.forEach(e -> {
+            try{
+                s3Service.delete(e.getFilePath());
+            }catch (IOException ioException){
+                ioException.printStackTrace();
+            }
+        });
+
+        postRepository.delete(post);
+    }
 }
