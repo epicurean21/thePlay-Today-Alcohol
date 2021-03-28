@@ -46,4 +46,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "where p.id = :postId ")
     Optional<Post> getRecipeByPostId(@Param("postId") Long postId);
 
+    @Query("SELECT p FROM Post p INNER JOIN AlcoholTag a " +
+            "on p.id = a.post.id " +
+            "WHERE a.name = :recipeName " +
+            "ORDER BY p.createdDate desc ")
+    Page<Post> getSearchPosts(@Param("recipeName") String recipeName, Pageable pageable);
 }

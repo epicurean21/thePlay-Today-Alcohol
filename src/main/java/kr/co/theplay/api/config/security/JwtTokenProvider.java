@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
@@ -21,16 +23,17 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private String secretKey = "USwKYibQQThePlay-*k.ap9kje-wxBHb9wdXoBTodaysAlcohol4vnt4P3sJWt-Nu!";
-
-    private long tokenValidTime = 90000 * 60 * 1000L;
+    private SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private long tokenValidTime = 900000 * 60 * 1000L; // 60 * 60 * 1000 이 1시간
 
     private final UserDetailsService userDetailsService;
 
+    /* 기존 원하는 secretKey를 String으로 생성하고 이를 Encode 하는 과정. 이제 생략 가능 !
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
+    */
 
     public String createToken(String userPk, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(userPk); // jwt Payload 에 저장되는 정보 단위
@@ -40,7 +43,7 @@ public class JwtTokenProvider {
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(new Date(now.getTime() + tokenValidTime)) // 만료 시간
-                .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호와 알고리즘 + Secrete Key
+                .signWith(SignatureAlgorithm.HS384, secretKey) // 사용할 암호와 알고리즘 + Secrete Key
 
                 .compact();
     }
