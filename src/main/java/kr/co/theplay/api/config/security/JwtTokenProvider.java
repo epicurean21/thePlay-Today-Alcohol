@@ -12,7 +12,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -27,12 +29,12 @@ public class JwtTokenProvider {
 
     private final UserDetailsService userDetailsService;
 
-    /* 기존 원하는 secretKey를 String으로 생성하고 이를 Encode 하는 과정. 이제 생략 가능 !
+    //기존 원하는 secretKey를 String으로 생성하고 이를 Encode 하는 과정. 이제 생략 가능 !
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
-    */
+
 
     public String createToken(String userPk, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(userPk); // jwt Payload 에 저장되는 정보 단위
