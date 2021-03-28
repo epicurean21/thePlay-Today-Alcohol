@@ -51,4 +51,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "WHERE a.name = :recipeName " +
             "ORDER BY p.createdDate desc ")
     Page<Post> getSearchPosts(@Param("recipeName") String recipeName, Pageable pageable);
+
 }
