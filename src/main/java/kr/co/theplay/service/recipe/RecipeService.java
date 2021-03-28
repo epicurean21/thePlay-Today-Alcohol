@@ -85,7 +85,7 @@ public class RecipeService {
         List<UserRecipeResDto> dtos = userRecipes.stream().map(UserRecipeResDto::new).collect(Collectors.toList());
 
         for (int i = 0; i < dtos.size(); i++) {
-            dtos.get(i).setPostId(userRecipeList.get(i).getPost().getId());
+            dtos.get(i).setPostId(userRecipeList.get(i).getAlcoholTag().getPost().getId());
 
             // alcoholTag 매칭 (레시피인것)
             AlcoholTag alcoholTag = alcoholTagRepository.findRecipesByPostId(dtos.get(i).getPostId());
@@ -105,7 +105,7 @@ public class RecipeService {
         List<UserRecipeResDto> dtos = userRecipes.stream().map(UserRecipeResDto::new).collect(Collectors.toList());
 
         for (int i = 0; i < userRecipes.size(); i++) {
-            dtos.get(i).setPostId(userRecipes.get(i).getPost().getId());
+            dtos.get(i).setPostId(userRecipes.get(i).getAlcoholTag().getPost().getId());
 
             // alcoholTag 매칭 (레시피인것)
             AlcoholTag alcoholTag = alcoholTagRepository.findRecipesByPostId(dtos.get(i).getPostId());

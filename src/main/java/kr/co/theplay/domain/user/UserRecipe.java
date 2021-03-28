@@ -21,10 +21,6 @@ public class UserRecipe extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "alcohol_tag_id")
     private AlcoholTag alcoholTag;
 
@@ -33,9 +29,8 @@ public class UserRecipe extends BaseTimeEntity {
     private User user;
 
     @Builder
-    public UserRecipe(Long id, Post post, AlcoholTag alcoholTag, User user) {
+    public UserRecipe(Long id, AlcoholTag alcoholTag, User user) {
         this.id = id;
-        this.post = post;
         this.alcoholTag = alcoholTag;
         this.user = user;
     }

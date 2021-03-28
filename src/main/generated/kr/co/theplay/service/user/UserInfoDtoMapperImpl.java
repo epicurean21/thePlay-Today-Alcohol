@@ -6,8 +6,8 @@ import kr.co.theplay.dto.user.UserInfoDto;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-03-18T16:58:11+0900",
-    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 1.8.0_191-1-ojdkbuild (Oracle Corporation)"
+    date = "2021-03-28T17:04:21+0900",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 15.0.1 (AdoptOpenJDK)"
 )
 public class UserInfoDtoMapperImpl implements UserInfoDtoMapper {
 

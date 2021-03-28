@@ -505,7 +505,6 @@ public class PostService {
 
             // 새롭게 저장 한다.
             UserRecipe userRecipe = UserRecipe.builder()
-                    .post(alcoholTag.getPost())
                     .alcoholTag(alcoholTag)
                     .user(user)
                     .build();

@@ -15,7 +15,8 @@ public interface UserRecipeRepository extends JpaRepository<UserRecipe, Long> {
 
     UserRecipe findByAlcoholTagAndUser(AlcoholTag alcoholTag, User user);
 
-    Optional<UserRecipe> findByPostIdAndUserEmail(Long postId, String email);
+    @Query("SELECT ur FROM UserRecipe ur WHERE ur.alcoholTag.post.id = :postId AND ur.user.email = :userEmail")
+    Optional<UserRecipe> findByPostIdAndUserEmail(@Param("postId") Long postId, @Param("userEmail") String userEmail);
 
     List<UserRecipe> getUserRecipeByUser(User user);
 
