@@ -279,4 +279,23 @@ public class PostController {
         SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "게시글 삭제", notes = "로그인한 유저가 본인의 게시글을 삭제한다.")
+    @DeleteMapping(value = "/post/{postId}")
+    public ResponseEntity<CommonResult> deletePostById (@PathVariable Long postId){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        postService.deletePostById(email, postId);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
 }
