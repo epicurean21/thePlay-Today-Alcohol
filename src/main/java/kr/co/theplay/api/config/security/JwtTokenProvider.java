@@ -23,7 +23,7 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS384);
     private long tokenValidTime = 900000 * 60 * 1000L; // 60 * 60 * 1000 이 1시간
 
     private final UserDetailsService userDetailsService;
