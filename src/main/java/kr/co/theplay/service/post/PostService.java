@@ -518,10 +518,10 @@ public class PostService {
     }
 
     @Transactional
-    public void changeLikePost(String email, Long postId) {
+    public PostLikeChangeResDto changeLikePost(String email, Long postId) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
-
+        PostLikeChangeResDto postLikeChangeResDto = new PostLikeChangeResDto();
         // 만약 해당 게시물에 좋아요를 누르지 않았다면
         if (!postLikeRepository.existsByPostAndUser(post, user)) {
 
@@ -530,13 +530,15 @@ public class PostService {
                     .post(post)
                     .user(user)
                     .build();
-
+            postLikeChangeResDto = PostLikeChangeResDto.builder().likeYn("Y").build();
             postLikeRepository.save(postLike);
         } else {
             // 이미 저장된 레시피일경우 삭제하자
             PostLike postLike = postLikeRepository.findByPostAndUser(post, user);
             postLikeRepository.delete(postLike);
+            postLikeChangeResDto = PostLikeChangeResDto.builder().likeYn("N").build();
         }
+        return postLikeChangeResDto;
     }
 
     public Page<PostResDto> getUserLikedPosts(String email, int number, int size) {
@@ -740,15 +742,15 @@ public class PostService {
     public void deletePostById(String email, Long postId) {
 
         Post post = postRepository.findById(postId).orElseThrow(() -> new CommonNotFoundException("postNotFound"));
-        if(!post.getUser().getEmail().equals(email)){
+        if (!post.getUser().getEmail().equals(email)) {
             throw new CommonBadRequestException("accessException");
         }
 
         List<PostImage> images = post.getImages();
         images.forEach(e -> {
-            try{
+            try {
                 s3Service.delete(e.getFilePath());
-            }catch (IOException ioException){
+            } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
         });

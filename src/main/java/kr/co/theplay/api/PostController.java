@@ -248,7 +248,7 @@ public class PostController {
     })
     @ApiOperation(value = "게시글 좋아요 / 좋아요 취소", notes = "게시글을 좋아요 혹은 좋아요를 취소한다.")
     @PostMapping(value = "/post/{postId}/like")
-    public ResponseEntity<CommonResult> changeLikePost(@PathVariable Long postId) {
+    public ResponseEntity<SingleResult<PostLikeChangeResDto>> changeLikePost(@PathVariable Long postId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -257,8 +257,9 @@ public class PostController {
             throw new CommonConflictException("accessException");
         }
 
-        postService.changeLikePost(email, postId);
-        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+        PostLikeChangeResDto postLikeChangeResDto = postService.changeLikePost(email, postId);
+        SingleResult<PostLikeChangeResDto> result = responseService.getSingleResult(postLikeChangeResDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @ApiImplicitParams({
