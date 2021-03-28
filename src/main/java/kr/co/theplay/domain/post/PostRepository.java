@@ -1,5 +1,6 @@
 package kr.co.theplay.domain.post;
 
+import kr.co.theplay.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -52,4 +53,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "ORDER BY p.createdDate desc ")
     Page<Post> getSearchPosts(@Param("recipeName") String recipeName, Pageable pageable);
 
+    @Query("select u.user from Post u where u.id = :postId")
+    User getPostOwner(@Param("postId") Long postId);
 }

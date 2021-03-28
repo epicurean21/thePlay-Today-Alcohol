@@ -4,18 +4,15 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -23,8 +20,10 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private long tokenValidTime = 900000 * 60 * 1000L; // 60 * 60 * 1000 이 1시간
+    @Value("${jwt.secretKey}")
+    private String secretKey;
+
+    private long tokenValidTime = 90000 * 60 * 1000L; // 60 * 60 * 1000 이 1시간
 
     private final UserDetailsService userDetailsService;
 
@@ -43,7 +42,7 @@ public class JwtTokenProvider {
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발행 시간 정보
                 .setExpiration(new Date(now.getTime() + tokenValidTime)) // 만료 시간
-                .signWith(SignatureAlgorithm.HS384, secretKey) // 사용할 암호와 알고리즘 + Secrete Key
+                .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호와 알고리즘 + Secrete Key
 
                 .compact();
     }

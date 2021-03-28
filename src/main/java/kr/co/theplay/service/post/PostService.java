@@ -1,5 +1,7 @@
 package kr.co.theplay.service.post;
 
+import kr.co.theplay.domain.notice.Alarm;
+import kr.co.theplay.domain.notice.AlarmRepository;
 import kr.co.theplay.domain.post.*;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRecipe;
@@ -40,6 +42,7 @@ public class PostService {
     private final PostCommentRepository postCommentRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final UserRecipeRepository userRecipeRepository;
+    private final AlarmRepository alarmRepository;
 
     @Transactional
     public void create(String email, PostReqDto postReqDto, List<MultipartFile> files) {
@@ -384,7 +387,44 @@ public class PostService {
                 .postCommentParentId(postCommentReqDto.getPostCommentParentId())
                 .content(postCommentReqDto.getContent())
                 .build();
-        postCommentRepository.save(postComment);
+        postCommentRepository.save(postComment); // 댓글 저장
+
+        // 알림 추가
+        // 댓글 작성자 (user), 게시글 주인, 대댓글이면 댓글 주인
+        /*
+        if (post.getUser().getId() != user.getId()) { // 게시글 작성자와 댓글 작성자가 다르다면, 게시글 작성자에게 알림.
+            if (postCommentReqDto.getPostCommentParentId() != 0) { // 대댓글 이라면 댓글 주인에게도 알림
+                PostComment parentComment = postCommentRepository
+                        .findById(postCommentReqDto.getPostCommentParentId())
+                        .orElseThrow(() -> new CommonNotFoundException("parentCommentNotFound"));
+
+                if (parentComment.getUser().getId() != user.getId()) { // 대댓글이고 작성자와 다르다면
+                    Alarm alarm = Alarm.builder().user(parentComment.getUser()).userSend(user).type("comment").content(
+                            user.getNickname() + "님이 회원님의 댓글에 댓글을 남겼습니다."
+                    ).build();
+                    alarmRepository.save(alarm);
+                }
+            }
+
+            Alarm alarm = Alarm.builder().user(post.getUser()).userSend(user).type("comment").content(
+                    user.getNickname() + "님이 회원님의 게시글에 댓글을 남겼습니다. '" + postCommentReqDto.getContent() + "'"
+            ).build();
+            alarmRepository.save(alarm);
+        } else {
+            if (postCommentReqDto.getPostCommentParentId() != 0) { // 대댓글 이라면 댓글 주인에게도 알림
+                PostComment parentComment = postCommentRepository
+                        .findById(postCommentReqDto.getPostCommentParentId())
+                        .orElseThrow(() -> new CommonNotFoundException("parentCommentNotFound"));
+
+                if (parentComment.getUser().getId() != user.getId()) { // 대댓글이고 작성자와 다르다면
+                    Alarm alarm = Alarm.builder().user(parentComment.getUser()).userSend(user).type("comment").content(
+                            user.getNickname() + "님이 회원님의 댓글에 댓글을 남겼습니다."
+                    ).build();
+                    alarmRepository.save(alarm);
+                }
+            }
+        }
+        */
     }
 
     public Page<PostResDto> getFollowingPosts(String email, int number, int size) {
