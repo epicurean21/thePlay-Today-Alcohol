@@ -8,6 +8,7 @@ import kr.co.theplay.domain.user.UserRecipe;
 import kr.co.theplay.domain.user.UserRecipeRepository;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.post.*;
+import kr.co.theplay.dto.recipe.RecipeSaveResDto;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import kr.co.theplay.service.zzz.S3Service;
@@ -493,13 +494,15 @@ public class PostService {
     }
 
     @Transactional
-    public void changeSaveRecipe(String email, Long alcoholTagId) {
+    public RecipeSaveResDto changeSaveRecipe(String email, Long alcoholTagId) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         AlcoholTag alcoholTag = alcoholTagRepository.findById(alcoholTagId).orElseThrow(() -> new CommonNotFoundException("alcoholTagNotFound"));
 
         if (alcoholTag.getRecipeYn().equals("N")) {
             throw new CommonBadRequestException("alcoholTagNotRecipe");
         }
+
+        RecipeSaveResDto recipeSaveResDto = new RecipeSaveResDto();
         // 만약 해당 술 태그 (레시피가) 가 저장되지 않은거라면
         if (!userRecipeRepository.existsByAlcoholTagAndUser(alcoholTag, user)) {
 
@@ -508,13 +511,15 @@ public class PostService {
                     .alcoholTag(alcoholTag)
                     .user(user)
                     .build();
-
+            recipeSaveResDto = RecipeSaveResDto.builder().saveYn("Y").build();
             userRecipeRepository.save(userRecipe);
         } else {
             // 이미 저장된 레시피일경우 삭제하자
             UserRecipe userRecipe = userRecipeRepository.findByAlcoholTagAndUser(alcoholTag, user);
+            recipeSaveResDto = RecipeSaveResDto.builder().saveYn("N").build();
             userRecipeRepository.delete(userRecipe);
         }
+        return recipeSaveResDto;
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.theplay.dto.post.*;
+import kr.co.theplay.dto.recipe.RecipeSaveResDto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
@@ -191,7 +192,7 @@ public class PostController {
     })
     @ApiOperation(value = "레시피 저장/삭제", notes = "레시피를 저장 혹은 저장된 레시피를 삭제한다.")
     @PostMapping(value = "/recipe/{alcoholTagId}")
-    public ResponseEntity<CommonResult> changeSaveRecipe(@PathVariable Long alcoholTagId) {
+    public ResponseEntity<SingleResult<RecipeSaveResDto>> changeSaveRecipe(@PathVariable Long alcoholTagId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -200,8 +201,9 @@ public class PostController {
             throw new CommonConflictException("accessException");
         }
 
-        postService.changeSaveRecipe(email, alcoholTagId);
-        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+        RecipeSaveResDto recipeSaveResDto = postService.changeSaveRecipe(email, alcoholTagId);
+        SingleResult<RecipeSaveResDto> result = responseService.getSingleResult(recipeSaveResDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @ApiImplicitParams({
@@ -286,7 +288,7 @@ public class PostController {
     })
     @ApiOperation(value = "게시글 삭제", notes = "로그인한 유저가 본인의 게시글을 삭제한다.")
     @DeleteMapping(value = "/post/{postId}")
-    public ResponseEntity<CommonResult> deletePostById (@PathVariable Long postId){
+    public ResponseEntity<CommonResult> deletePostById(@PathVariable Long postId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
