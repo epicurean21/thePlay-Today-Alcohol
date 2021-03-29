@@ -26,7 +26,7 @@ public class ExceptionAdvice {
     private final MessageSource messageSource;
 
     /**
-     * BAD REQUEST 에 대한 공통처리
+     * NOT_FOUND 에 대한 공통처리
      */
 
     @ExceptionHandler(CommonNotFoundException.class)
@@ -36,11 +36,11 @@ public class ExceptionAdvice {
     }
 
     /**
-     * BAD REQUEST 에 대한 공통처리
+     * BAD_REQUEST 에 대한 공통처리
      */
 
     @ExceptionHandler(CommonBadRequestException.class)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected CommonResult CommonBadRequest(HttpServletRequest request, CommonBadRequestException e) {
         return generateFailResult(request, e);
     }
