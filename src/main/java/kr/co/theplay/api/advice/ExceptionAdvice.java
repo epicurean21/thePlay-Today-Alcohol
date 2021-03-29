@@ -40,7 +40,7 @@ public class ExceptionAdvice {
      */
 
     @ExceptionHandler(CommonBadRequestException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     protected CommonResult CommonBadRequest(HttpServletRequest request, CommonBadRequestException e) {
         return generateFailResult(request, e);
     }
