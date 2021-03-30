@@ -762,4 +762,14 @@ public class PostService {
 
         postRepository.delete(post);
     }
+
+    @Transactional
+    public void createCommentLike(String email, Long postCommentId) {
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new CommonNotFoundException("commentNotFound"));
+        CommentLike commentLike = CommentLike.builder().postComment(postComment).user(user).build();
+
+        commentLikeRepository.save(commentLike);
+    }
 }

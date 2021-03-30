@@ -19,9 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.xml.ws.Response;
 import java.util.List;
 
 @Api(tags = {"103. Post (게시글)"})
@@ -281,6 +283,24 @@ public class PostController {
         Page<PostResDto> postResDtos = postService.getSearchPosts(email, recipeName, number, size);
         SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "게시글 댓글 좋아요", notes = "게시글 댓글을 '좋아요'한다.")
+    @PostMapping(value = "/comment/{postCommentId}/like")
+    public ResponseEntity<CommonResult> createCommentLike(@PathVariable Long postCommentId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        postService.createCommentLike(email, postCommentId);
+        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
     }
 
     @ApiImplicitParams({
