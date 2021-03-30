@@ -736,20 +736,22 @@ public class PostService {
     }
 
     @Transactional
-    public void createCommentLike(String email, Long postCommentId) {
+    public CommentLikeResDto createCommentLike(String email, Long postCommentId) {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new CommonNotFoundException("commentNotFound"));
 
         CommentLike commentLike = commentLikeRepository.findByPostCommentAndUser(postComment, user).orElse(null);
-
-        if(commentLike != null){
+        CommentLikeResDto commentLikeResDto = new CommentLikeResDto();
+        if (commentLike != null) {
             commentLikeRepository.delete(commentLike);
-        }else {
+            commentLikeResDto = CommentLikeResDto.builder().likeYn("N").build();
+        } else {
             CommentLike createdCommentLike = CommentLike.builder().postComment(postComment).user(user).build();
             commentLikeRepository.save(createdCommentLike);
+            commentLikeResDto = CommentLikeResDto.builder().likeYn("Y").build();
         }
-
+        return commentLikeResDto;
     }
 
     @Transactional

@@ -46,12 +46,15 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.privacyYn = privacyYn;
     }
 
-    public void changePrivacyYn(){
+    public String changePrivacyYn(){
         if(privacyYn.equals("N")){
             this.privacyYn = "Y";
+            return this.privacyYn;
         }else if(privacyYn.equals("Y")){
             this.privacyYn = "N";
+            return this.privacyYn;
         }
+        return this.privacyYn;
     }
 
     public void updateUserPassword(String password) {

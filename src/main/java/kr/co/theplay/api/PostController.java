@@ -287,7 +287,7 @@ public class PostController {
     })
     @ApiOperation(value = "게시글 댓글 좋아요", notes = "게시글 댓글을 '좋아요'한다.")
     @PostMapping(value = "/comment/{postCommentId}/like")
-    public ResponseEntity<CommonResult> createCommentLike(@PathVariable Long postCommentId) {
+    public ResponseEntity<SingleResult<CommentLikeResDto>> createCommentLike(@PathVariable Long postCommentId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -296,8 +296,9 @@ public class PostController {
             throw new CommonConflictException("accessException");
         }
 
-        postService.createCommentLike(email, postCommentId);
-        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+        CommentLikeResDto commentLikeResDto = postService.createCommentLike(email, postCommentId);
+        SingleResult<CommentLikeResDto> result = responseService.getSingleResult(commentLikeResDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @ApiImplicitParams({

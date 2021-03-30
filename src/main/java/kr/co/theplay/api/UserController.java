@@ -137,7 +137,7 @@ public class UserController {
     })
     @ApiOperation(value = "회원 계정 비공개 여부 변경", notes = "회원 계정의 비공개 여부를 변경한다.")
     @PutMapping(value = "/user/show-yn")
-    public ResponseEntity<CommonResult> changePrivacyYn() {
+    public ResponseEntity<SingleResult<UserChangePrivacyResDto>> changePrivacyYn() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -146,8 +146,9 @@ public class UserController {
             throw new CommonConflictException("accessException");
         }
 
-        userService.changePrivacyYn(email);
-        return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+        UserChangePrivacyResDto userChangePrivacyResDto = userService.changePrivacyYn(email);
+        SingleResult<UserChangePrivacyResDto> result = responseService.getSingleResult(userChangePrivacyResDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @ApiImplicitParams({
