@@ -43,4 +43,8 @@ public class Alarm extends BaseTimeEntity {
         this.type = type;
         this.content = content;
     }
+
+    public void changeReadYn(String readYn) {
+        this.readYn = readYn;
+    }
 }

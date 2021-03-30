@@ -4,6 +4,8 @@ import kr.co.theplay.domain.follow.Block;
 import kr.co.theplay.domain.follow.BlockRepository;
 import kr.co.theplay.domain.follow.Follow;
 import kr.co.theplay.domain.follow.FollowRepository;
+import kr.co.theplay.domain.notice.Alarm;
+import kr.co.theplay.domain.notice.AlarmRepository;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.follow.FollowUserDto;
@@ -25,6 +27,7 @@ public class FollowService {
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
     private final BlockRepository blockRepository;
+    private final AlarmRepository alarmRepository;
 
     @Transactional
     public void followUser(String email, Long userId) {
@@ -43,6 +46,8 @@ public class FollowService {
 
         Follow follow = Follow.builder().user(user).userFollow(followedUser).build();
         followRepository.save(follow);
+
+        uploadFollowingAlarm(user, followedUser);
     }
 
     public List<FollowUserDto> getFollowings(String email) {
@@ -108,5 +113,14 @@ public class FollowService {
         Block block = Block.builder().user(user).userBlock(userBlock).build();
         blockRepository.save(block);
         deleteFollower(user.getEmail(), userBlock.getId());
+    }
+
+    @Transactional
+    public void uploadFollowingAlarm(User user, User followedUser) {
+        Alarm alarm = Alarm.builder()
+                .content(
+                        followedUser.getNickname() + "님이 회원님을 팔로잉 합니다."
+                ).user(followedUser).userSend(user).readYn("N").type("following").build();
+        alarmRepository.save(alarm);
     }
 }

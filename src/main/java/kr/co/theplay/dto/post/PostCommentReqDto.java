@@ -1,6 +1,7 @@
 package kr.co.theplay.dto.post;
 
 import io.swagger.annotations.ApiModelProperty;
+import kr.co.theplay.domain.notice.Alarm;
 import kr.co.theplay.domain.post.PostComment;
 import lombok.Builder;
 import lombok.Getter;

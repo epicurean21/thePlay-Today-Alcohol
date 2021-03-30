@@ -391,41 +391,8 @@ public class PostService {
         postCommentRepository.save(postComment); // 댓글 저장
 
         // 알림 추가
-        // 댓글 작성자 (user), 게시글 주인, 대댓글이면 댓글 주인
-        /*
-        if (post.getUser().getId() != user.getId()) { // 게시글 작성자와 댓글 작성자가 다르다면, 게시글 작성자에게 알림.
-            if (postCommentReqDto.getPostCommentParentId() != 0) { // 대댓글 이라면 댓글 주인에게도 알림
-                PostComment parentComment = postCommentRepository
-                        .findById(postCommentReqDto.getPostCommentParentId())
-                        .orElseThrow(() -> new CommonNotFoundException("parentCommentNotFound"));
-
-                if (parentComment.getUser().getId() != user.getId()) { // 대댓글이고 작성자와 다르다면
-                    Alarm alarm = Alarm.builder().user(parentComment.getUser()).userSend(user).type("comment").content(
-                            user.getNickname() + "님이 회원님의 댓글에 댓글을 남겼습니다."
-                    ).build();
-                    alarmRepository.save(alarm);
-                }
-            }
-
-            Alarm alarm = Alarm.builder().user(post.getUser()).userSend(user).type("comment").content(
-                    user.getNickname() + "님이 회원님의 게시글에 댓글을 남겼습니다. '" + postCommentReqDto.getContent() + "'"
-            ).build();
-            alarmRepository.save(alarm);
-        } else {
-            if (postCommentReqDto.getPostCommentParentId() != 0) { // 대댓글 이라면 댓글 주인에게도 알림
-                PostComment parentComment = postCommentRepository
-                        .findById(postCommentReqDto.getPostCommentParentId())
-                        .orElseThrow(() -> new CommonNotFoundException("parentCommentNotFound"));
-
-                if (parentComment.getUser().getId() != user.getId()) { // 대댓글이고 작성자와 다르다면
-                    Alarm alarm = Alarm.builder().user(parentComment.getUser()).userSend(user).type("comment").content(
-                            user.getNickname() + "님이 회원님의 댓글에 댓글을 남겼습니다."
-                    ).build();
-                    alarmRepository.save(alarm);
-                }
-            }
-        }
-        */
+        // 게시글, user (댓글 작성자), dto
+        uploadCommentAlarm(post, user, postCommentReqDto);
     }
 
     public Page<PostResDto> getFollowingPosts(String email, int number, int size) {
@@ -536,6 +503,10 @@ public class PostService {
                     .user(user)
                     .build();
             postLikeChangeResDto = PostLikeChangeResDto.builder().likeYn("Y").build();
+
+            // alarm 추가, (게시글 주인, 좋아요 누른사람)
+            uploadLikeAlarm(post, user);
+
             postLikeRepository.save(postLike);
         } else {
             // 이미 저장된 레시피일경우 삭제하자
@@ -543,6 +514,7 @@ public class PostService {
             postLikeRepository.delete(postLike);
             postLikeChangeResDto = PostLikeChangeResDto.builder().likeYn("N").build();
         }
+
         return postLikeChangeResDto;
     }
 
@@ -761,5 +733,56 @@ public class PostService {
         });
 
         postRepository.delete(post);
+    }
+
+    @Transactional
+    public void uploadCommentAlarm(Post post, User user, PostCommentReqDto postCommentReqDto) {
+        // 댓글 작성자 (user), 게시글 주인, 대댓글이면 댓글 주인
+        if (post.getUser().getId() != user.getId()) { // 게시글 작성자와 댓글 작성자가 다르다면, 게시글 작성자에게 알림.
+            if (postCommentReqDto.getPostCommentParentId() != 0) { // 대댓글 이라면 댓글 주인에게도 알림
+                PostComment parentComment = postCommentRepository
+                        .findById(postCommentReqDto.getPostCommentParentId())
+                        .orElseThrow(() -> new CommonNotFoundException("parentCommentNotFound"));
+
+                if (parentComment.getUser().getId() != user.getId()) { // 대댓글이고 작성자와 다르다면
+                    Alarm alarm = Alarm.builder().user(parentComment.getUser()).userSend(user).type("comment").content(
+                            user.getNickname() + "님이 회원님의 댓글에 댓글을 남겼습니다." + postCommentReqDto.getContent() + "'"
+                    ).readYn("N").build();
+                    alarmRepository.save(alarm);
+                }
+            }
+
+            Alarm alarm = Alarm.builder().user(post.getUser()).userSend(user).type("comment").content(
+                    user.getNickname() + "님이 회원님의 게시글에 댓글을 남겼습니다. '" + postCommentReqDto.getContent() + "'"
+            ).readYn("N").build();
+            alarmRepository.save(alarm);
+        } else {
+            if (postCommentReqDto.getPostCommentParentId() != 0) { // 대댓글 이라면 댓글 주인에게도 알림
+                PostComment parentComment = postCommentRepository
+                        .findById(postCommentReqDto.getPostCommentParentId())
+                        .orElseThrow(() -> new CommonNotFoundException("parentCommentNotFound"));
+
+                if (parentComment.getUser().getId() != user.getId()) { // 대댓글이고 작성자와 다르다면
+                    Alarm alarm = Alarm.builder().user(parentComment.getUser()).userSend(user).type("comment").content(
+                            user.getNickname() + "님이 회원님의 댓글에 댓글을 남겼습니다." + postCommentReqDto.getContent() + "'"
+                    ).readYn("N").build();
+                    alarmRepository.save(alarm);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void uploadLikeAlarm(Post post, User user) {
+        if (post.getUser() != user) { // 게시글 주인과 좋아요 누른 사용자가 다른 사람이라면 알림
+            Alarm alarm = Alarm.builder()
+                    .content(user.getNickname() + "님이 회원님의 게시글에 좋아요를 눌렀습니다.")
+                    .user(post.getUser())
+                    .userSend(user)
+                    .type("like")
+                    .readYn("N")
+                    .build();
+            alarmRepository.save(alarm);
+        }
     }
 }

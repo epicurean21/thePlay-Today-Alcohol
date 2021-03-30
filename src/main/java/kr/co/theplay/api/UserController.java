@@ -2,6 +2,7 @@ package kr.co.theplay.api;
 
 import io.swagger.annotations.*;
 import kr.co.theplay.domain.notice.Notice;
+import kr.co.theplay.dto.notice.AlarmResDto;
 import kr.co.theplay.dto.notice.NoticeListDto;
 import kr.co.theplay.dto.notice.NoticeSingleDto;
 import kr.co.theplay.dto.user.*;
@@ -12,6 +13,7 @@ import kr.co.theplay.service.api.common.ResponseService;
 import kr.co.theplay.service.api.common.model.CommonResult;
 import kr.co.theplay.service.api.common.model.ListResult;
 import kr.co.theplay.service.api.common.model.SingleResult;
+import kr.co.theplay.service.notice.AlarmService;
 import kr.co.theplay.service.notice.NoticeService;
 import kr.co.theplay.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,7 @@ public class UserController {
     private final ResponseService responseService;
     private final PasswordEncoder passwordEncoder;
     private final NoticeService noticeService;
+    private final AlarmService alarmService;
 
     //회원가입
     @ApiOperation(value = "회원가입", notes = "회원가입을 하고 토큰을 발급받는다.")
@@ -265,6 +268,42 @@ public class UserController {
 
         UserMainInfoDto userMainInfoDto = userService.getOtherUserIngo(email, userId);
         SingleResult<UserMainInfoDto> result = responseService.getSingleResult(userMainInfoDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "알람 목록 조회", notes = "알람 목록을 조회한다")
+    @GetMapping(value = "/alarms")
+    public ResponseEntity<ListResult<AlarmResDto>> getAlarm() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        List<AlarmResDto> alarmResDto = alarmService.getAlarms(email);
+        ListResult<AlarmResDto> result = responseService.getListResult(alarmResDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "알람 단건 조회", notes = "단건 알람을 조회하여 읽는다.")
+    @GetMapping(value = "/alarm/{alarmId}")
+    public ResponseEntity<SingleResult<AlarmResDto>> getSingleAlarm(@PathVariable Long alarmId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        AlarmResDto alarmResDto = alarmService.getSingleAlarm(email, alarmId);
+        SingleResult<AlarmResDto> result = responseService.getSingleResult(alarmResDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
