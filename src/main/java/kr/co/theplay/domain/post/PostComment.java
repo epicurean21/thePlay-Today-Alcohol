@@ -5,6 +5,8 @@ import kr.co.theplay.domain.user.User;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -23,6 +25,9 @@ public class PostComment extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "postComment", cascade = CascadeType.REMOVE)
+    private List<CommentLike> commentLikes = new ArrayList<>();
+
     @Column
     private Long postCommentParentId;
 
@@ -30,10 +35,12 @@ public class PostComment extends BaseTimeEntity {
     private String content;
 
     @Builder
-    public PostComment(Long id, Post post, User user, Long postCommentParentId, String content) {
+    public PostComment(Long id, Post post, User user, List<CommentLike> commentLikes,
+                       Long postCommentParentId, String content) {
         this.id = id;
         this.post = post;
         this.user = user;
+        this.commentLikes = commentLikes;
         this.postCommentParentId = postCommentParentId;
         this.content = content;
     }
