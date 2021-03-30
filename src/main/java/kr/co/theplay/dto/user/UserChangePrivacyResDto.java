@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserChangePrivacyResDto {
     @ApiModelProperty(value = "공개/비공개 여부", dataType = "String", required = true, example = "Y")
-    private String showYn;
+    private String privacyYn;
 
     @Builder
-    public UserChangePrivacyResDto(String showYn) {
-        this.showYn = showYn;
+    public UserChangePrivacyResDto(String privacyYn) {
+        this.privacyYn = privacyYn;
     }
 }

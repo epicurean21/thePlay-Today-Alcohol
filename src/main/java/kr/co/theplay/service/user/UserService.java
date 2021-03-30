@@ -154,8 +154,8 @@ public class UserService {
     @Transactional
     public UserChangePrivacyResDto changePrivacyYn(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
-        String showYn = user.changePrivacyYn();
-        UserChangePrivacyResDto userChangePrivacyResDto = UserChangePrivacyResDto.builder().showYn(showYn).build();
+        String privacyYn = user.changePrivacyYn();
+        UserChangePrivacyResDto userChangePrivacyResDto = UserChangePrivacyResDto.builder().privacyYn(privacyYn).build();
         return userChangePrivacyResDto;
     }
 
