@@ -2,7 +2,6 @@ package kr.co.theplay.service.notice;
 
 import kr.co.theplay.domain.notice.Alarm;
 import kr.co.theplay.domain.notice.AlarmRepository;
-import kr.co.theplay.domain.post.PostRepository;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.notice.AlarmResDto;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +21,7 @@ public class AlarmService {
     private final UserRepository userRepository;
     private final AlarmRepository alarmRepository;
 
+    @Transactional
     public List<AlarmResDto> getAlarms(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         List<Alarm> alarm = alarmRepository.findByUserOrderByCreatedDateDesc(user);
@@ -30,6 +29,14 @@ public class AlarmService {
         alarm.forEach(a -> alarmResDtos.add(
                 AlarmResDto.builder().id(a.getId()).content(a.getContent()).readYn(a.getReadYn()).type(a.getType()).build()
         ));
+
+        // 만약 읽지 않은 알림들이 있다면 다 읽은걸로
+        for (int i = 0; i < alarm.size(); i++) {
+            if (alarm.get(i).getReadYn().equals("N")) {
+                alarm.get(i).changeReadYn("Y");
+                alarmRepository.save(alarm.get(i));
+            }
+        }
         return alarmResDtos;
     }
 

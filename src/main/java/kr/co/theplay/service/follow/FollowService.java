@@ -120,7 +120,7 @@ public class FollowService {
         Alarm alarm = Alarm.builder()
                 .content(
                         followedUser.getNickname() + "님이 회원님을 팔로잉 합니다."
-                ).user(followedUser).userSend(user).readYn("N").type("following").build();
+                ).user(followedUser).userSend(user).readYn("N").type("follow").build();
         alarmRepository.save(alarm);
     }
 }
