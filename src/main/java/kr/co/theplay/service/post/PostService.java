@@ -768,8 +768,15 @@ public class PostService {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
         PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new CommonNotFoundException("commentNotFound"));
-        CommentLike commentLike = CommentLike.builder().postComment(postComment).user(user).build();
 
-        commentLikeRepository.save(commentLike);
+        CommentLike commentLike = commentLikeRepository.findByPostCommentAndUser(postComment, user).orElse(null);
+
+        if(commentLike != null){
+            commentLikeRepository.delete(commentLike);
+        }else {
+            CommentLike createdCommentLike = CommentLike.builder().postComment(postComment).user(user).build();
+            commentLikeRepository.save(createdCommentLike);
+        }
+
     }
 }
