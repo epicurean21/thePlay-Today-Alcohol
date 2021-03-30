@@ -736,6 +736,23 @@ public class PostService {
     }
 
     @Transactional
+    public void createCommentLike(String email, Long postCommentId) {
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new CommonNotFoundException("commentNotFound"));
+
+        CommentLike commentLike = commentLikeRepository.findByPostCommentAndUser(postComment, user).orElse(null);
+
+        if(commentLike != null){
+            commentLikeRepository.delete(commentLike);
+        }else {
+            CommentLike createdCommentLike = CommentLike.builder().postComment(postComment).user(user).build();
+            commentLikeRepository.save(createdCommentLike);
+        }
+
+    }
+
+    @Transactional
     public void uploadCommentAlarm(Post post, User user, PostCommentReqDto postCommentReqDto) {
         // 댓글 작성자 (user), 게시글 주인, 대댓글이면 댓글 주인
         if (post.getUser().getId() != user.getId()) { // 게시글 작성자와 댓글 작성자가 다르다면, 게시글 작성자에게 알림.

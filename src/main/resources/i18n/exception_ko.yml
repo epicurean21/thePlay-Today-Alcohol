@@ -61,7 +61,7 @@ postReportReasonIncorrect:
 
 commentNotFound:
   code: "-2006"
-  msg: "게시글에 댓글이 존재하지 않습니다."
+  msg: "댓글이 존재하지 않습니다."
 
 parentCommentNotFound:
   code: "-2007"
