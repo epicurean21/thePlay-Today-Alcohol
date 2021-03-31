@@ -114,3 +114,7 @@ alarmNotFound:
 alarmNotAllowd:
   code: "-3006"
   msg: "접근이 허용되지 않는 알람입니다."
+
+userPrivacyInvaded:
+  code: "-3007"
+  msg: "비공개 계정입니다."

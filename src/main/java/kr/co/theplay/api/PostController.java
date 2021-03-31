@@ -247,6 +247,25 @@ public class PostController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
+    @ApiOperation(value = "선택 유저 좋아요 누른 게시글", notes = "선택한 유저의 메인 화면에서 좋아요 누른 게시물들을 불러온다")
+    @GetMapping(value = "/user/{userId}/posts/like")
+    public ResponseEntity<SingleResult<Page<PostResDto>>> getOtherUserLikedPosts(@PathVariable Long userId, @RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        Page<PostResDto> postResDtos = postService.getOtherUsersLikedPosts(email, userId, number, size);
+        SingleResult<Page<PostResDto>> result = responseService.getSingleResult(postResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
     @ApiOperation(value = "게시글 좋아요 / 좋아요 취소", notes = "게시글을 좋아요 혹은 좋아요를 취소한다.")
     @PostMapping(value = "/post/{postId}/like")
     public ResponseEntity<SingleResult<PostLikeChangeResDto>> changeLikePost(@PathVariable Long postId) {

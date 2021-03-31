@@ -75,9 +75,9 @@ public class RecipeController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
-    @ApiOperation(value = "유저 나의 레시피 검색 가져오기", notes = "유저 나의 레시피 (저장한 레시피) 검색내역을 페이징으로 가져온다")
+    @ApiOperation(value = "유저 나의 레시피 검색 가져오기", notes = "유저 나의 레시피 (저장한 레시피) 검색내역을 가져온다")
     @GetMapping(value = "/user/recipe")
-    public ResponseEntity<ListResult<UserRecipeResDto>> getUserRecipes(@RequestParam("recipeName") String recipeName) {
+    public ResponseEntity<ListResult<UserRecipeResDto>> getUserRecipe(@RequestParam("recipeName") String recipeName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
@@ -93,10 +93,49 @@ public class RecipeController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
+    @ApiOperation(value = "선택 유저 나의 레시피 가져오기", notes = "선택한 유저의 나의 레시피 (저장한 레시피) 를 페이징으로 가져온다")
+    @GetMapping(value = "/user/{userId}/recipes")
+    public ResponseEntity<SingleResult<Page<UserRecipeResDto>>> getOtherUsersRecipes(@PathVariable Long userId,
+                                                                                     @RequestParam("pageNumber") int number,
+                                                                                     @RequestParam("pageSize") int size) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        Page<UserRecipeResDto> userRecipeResDtos = recipeService.getOtherUserRecipes(email, userId, number, size);
+        SingleResult<Page<UserRecipeResDto>> result = responseService.getSingleResult(userRecipeResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "선택 유저 나의 레시피 검색 가져오기", notes = "선택한 유저의 나의 레시피 (저장한 레시피) 검색내역을 가져온다")
+    @GetMapping(value = "/user/{userId}/recipe")
+    public ResponseEntity<ListResult<UserRecipeResDto>> getOtherUserRecipe(@PathVariable Long userId,
+                                                                           @RequestParam("recipeName") String recipeName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        List<UserRecipeResDto> userRecipeResDtos = recipeService.getOtherUserSearchRecipe(email, userId, recipeName);
+        ListResult<UserRecipeResDto> result = responseService.getListResult(userRecipeResDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
     @ApiOperation(value = "인기 레시피 모두 보기", notes = "인기 레시피 중 특정 태그에 대해 모든 레시피를 조회한다.")
     @GetMapping(value = "/popular-recipes/{tagName}")
     public ResponseEntity<SingleResult<Page<PostResDto>>> getPopularRecipesByTagName(
-            @PathVariable String tagName, @RequestParam("pageNumber") int number, @RequestParam("pageSize") int size){
+            @PathVariable String tagName, @RequestParam("pageNumber") int number, @RequestParam("pageSize") int size) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();

@@ -8,6 +8,7 @@ import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.post.*;
 import kr.co.theplay.dto.recipe.PopularRecipeDto;
 import kr.co.theplay.dto.recipe.UserRecipeResDto;
+import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import kr.co.theplay.service.zzz.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -100,8 +101,66 @@ public class RecipeService {
         return new PageImpl<>(dtos, pageable, userRecipes.getTotalElements());
     }
 
+    public Page<UserRecipeResDto> getOtherUserRecipes(String email, Long userId, int number, int size) {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+
+        if (user.getPrivacyYn().equals("Y") && !user.getEmail().equals(email)) {
+            throw new CommonBadRequestException("userPrivacyInvaded");
+        }
+
+        // 사용자가 저장한 레시피들을 불러온다.
+        Pageable pageable = PageRequest.of(number, size);
+
+        // 선택 유저의 저장한 레시피 목록을 가져온다
+        Page<UserRecipe> userRecipes = userRecipeRepository.findByUserIdOrderByCreatedDateDesc(pageable, user.getId());
+
+        List<UserRecipe> userRecipeList = userRecipes.getContent();
+
+        List<UserRecipeResDto> dtos = userRecipes.stream().map(UserRecipeResDto::new).collect(Collectors.toList());
+
+        for (int i = 0; i < dtos.size(); i++) {
+            dtos.get(i).setPostId(userRecipeList.get(i).getAlcoholTag().getPost().getId());
+
+            // alcoholTag 매칭 (레시피인것)
+            AlcoholTag alcoholTag = alcoholTagRepository.findRecipesByPostId(dtos.get(i).getPostId());
+            AlcoholTagDto alcoholTagDto = new AlcoholTagDto(alcoholTag);
+            dtos.get(i).setAlcoholTag(alcoholTagDto);
+
+            List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
+            List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
+            dtos.get(i).setIngredients(ingredientDtos);
+        }
+
+        return new PageImpl<>(dtos, pageable, userRecipes.getTotalElements());
+    }
+
     public List<UserRecipeResDto> getUserSearchRecipe(String email, String recipeName) {
         List<UserRecipe> userRecipes = userRecipeRepository.findByKeyword(email, recipeName);
+        List<UserRecipeResDto> dtos = userRecipes.stream().map(UserRecipeResDto::new).collect(Collectors.toList());
+
+        for (int i = 0; i < userRecipes.size(); i++) {
+            dtos.get(i).setPostId(userRecipes.get(i).getAlcoholTag().getPost().getId());
+
+            // alcoholTag 매칭 (레시피인것)
+            AlcoholTag alcoholTag = alcoholTagRepository.findRecipesByPostId(dtos.get(i).getPostId());
+            AlcoholTagDto alcoholTagDto = new AlcoholTagDto(alcoholTag);
+            dtos.get(i).setAlcoholTag(alcoholTagDto);
+
+            List<RecipeIngredient> ingredients = recipeIngredientRepository.findByPostId(dtos.get(i).getPostId());
+            List<RecipeIngredientDto> ingredientDtos = ingredients.stream().map(RecipeIngredientDto::new).collect(Collectors.toList());
+            dtos.get(i).setIngredients(ingredientDtos);
+        }
+        return dtos;
+    }
+
+    public List<UserRecipeResDto> getOtherUserSearchRecipe(String email, Long userId, String recipeName) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        if (user.getPrivacyYn().equals("Y") && !user.getEmail().equals(email)) {
+            throw new CommonBadRequestException("userPrivacyInvaded");
+        }
+
+        List<UserRecipe> userRecipes = userRecipeRepository.findByKeyword(user.getEmail(), recipeName);
         List<UserRecipeResDto> dtos = userRecipes.stream().map(UserRecipeResDto::new).collect(Collectors.toList());
 
         for (int i = 0; i < userRecipes.size(); i++) {
@@ -124,29 +183,29 @@ public class RecipeService {
         Pageable pageable = PageRequest.of(number, size);
 
         //태그에 해당되는 post에 대해 좋아요 개수와 postId를 인기순 조회 (좋아요 0개도 조회)
-        Page<Object []> postInfos = alcoholTagRepository.findByNameOrderByLikeCnt(tagName, pageable);
-        List<Object []> postInfoList = postInfos.getContent();
+        Page<Object[]> postInfos = alcoholTagRepository.findByNameOrderByLikeCnt(tagName, pageable);
+        List<Object[]> postInfoList = postInfos.getContent();
 
         //태그에 해당하는 각 post 정보를 postResDto로 매칭
         List<PostResDto> dtos = new ArrayList<>();
 
-        for(int i = 0; i < postInfoList.size(); i++){
+        for (int i = 0; i < postInfoList.size(); i++) {
 
-            Post post = postRepository.getRecipeByPostId( ((BigInteger)postInfoList.get(i)[1]).longValue())
+            Post post = postRepository.getRecipeByPostId(((BigInteger) postInfoList.get(i)[1]).longValue())
                     .orElseThrow(() -> new CommonNotFoundException("pageNotFound"));
             PostResDto dto = new PostResDto(post);
 
             // 좋아요 여부
-            if(postLikeRepository.findByPostIdAndUserEmail(post.getId(), email).isPresent()){
+            if (postLikeRepository.findByPostIdAndUserEmail(post.getId(), email).isPresent()) {
                 dto.setPostLikeYn("Y");
-            }else{
+            } else {
                 dto.setPostLikeYn("N");
             }
 
             // 레시피 저장 여부 (레시피가 있는 애들만 조회된 상태)
-            if(userRecipeRepository.findByPostIdAndUserEmail(post.getId(), email).isPresent()){
+            if (userRecipeRepository.findByPostIdAndUserEmail(post.getId(), email).isPresent()) {
                 dto.setSaveRecipeYn("Y");
-            }else{
+            } else {
                 dto.setSaveRecipeYn("N");
             }
 
@@ -155,10 +214,10 @@ public class RecipeService {
             dto.setCommentCnt(commentCnt);
 
             // 대표댓글
-            if(commentCnt != 0){
+            if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(post.getId(), (long) 0);
                 dto.setComment(comment.getContent());
-            }else{
+            } else {
                 dto.setComment("N");
             }
 

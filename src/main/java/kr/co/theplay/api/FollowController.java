@@ -90,6 +90,24 @@ public class FollowController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
+    @ApiOperation(value = "선택 유저 팔로워 목록 조회", notes = "로그인한 회원의 팔로워 목록을 조회한다")
+    @GetMapping(value = "/user/{userId}/followers")
+    public ResponseEntity<ListResult<FollowUserDto>> getOtherUserFollowers(@PathVariable Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+        List<FollowUserDto> followUserDtos = followService.getOtherUserFollower(userId);
+        ListResult<FollowUserDto> result = responseService.getListResult(followUserDtos);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
     @ApiOperation(value = "팔로워 삭제", notes = "회원의 팔로워를 삭제한다")
     @DeleteMapping(value = "/user/followers/{userId}")
     public ResponseEntity<CommonResult> deleteFollower(@PathVariable Long userId) {

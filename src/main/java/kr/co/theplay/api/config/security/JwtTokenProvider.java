@@ -29,7 +29,7 @@ public class JwtTokenProvider {
 
     private final UserDetailsService userDetailsService;
 
-    //기존 원하는 secretKey를 String으로 생성하고 이를 Encode 하는 과정. 이제 생략 가능 !
+    //기존의 String을 암호로 Encode 하는 과정.
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());

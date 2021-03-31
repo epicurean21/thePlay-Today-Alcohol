@@ -9,9 +9,13 @@ import kr.co.theplay.domain.notice.AlarmRepository;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.follow.FollowUserDto;
+import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
+import kr.co.theplay.service.api.common.ResponseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,7 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final BlockRepository blockRepository;
     private final AlarmRepository alarmRepository;
+    private final ResponseService responseService;
 
     @Transactional
     public void followUser(String email, Long userId) {
@@ -64,6 +69,23 @@ public class FollowService {
 
     public List<FollowUserDto> getFollowers(String email) {
         List<Follow> follows = followRepository.findFollowersByUser(email);
+        List<FollowUserDto> followUserDtos = new ArrayList<>();
+        follows.forEach(f -> followUserDtos.add(
+                FollowUserDto.builder()
+                        .id(f.getUser().getId())
+                        .nickname(f.getUser().getNickname())
+                        .build()
+        ));
+        return followUserDtos;
+    }
+
+    public List<FollowUserDto> getOtherUserFollower(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+
+        if (user.getPrivacyYn().equals("Y")) {
+            throw new CommonBadRequestException("userPrivacyInvaded");
+        }
+        List<Follow> follows = followRepository.findFollowersByUser(user.getEmail());
         List<FollowUserDto> followUserDtos = new ArrayList<>();
         follows.forEach(f -> followUserDtos.add(
                 FollowUserDto.builder()
