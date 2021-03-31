@@ -312,7 +312,7 @@ public class UserController {
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "개정 공개 비공개 여부", notes = "로그인 된 개정의 공개/비공개 여부를 조회한다")
-    @GetMapping(value = "/user/setting/privacy")
+    @GetMapping(value = "/user/show-yn")
     public ResponseEntity<SingleResult<UserChangePrivacyResDto>> getUserPrivacy() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
