@@ -252,4 +252,10 @@ public class UserService {
 
         return userMainInfoDto;
     }
+
+    public UserChangePrivacyResDto getUserPrivacy(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        UserChangePrivacyResDto userChangePrivacyResDto = UserChangePrivacyResDto.builder().privacyYn(user.getPrivacyYn()).build();
+        return userChangePrivacyResDto;
+    }
 }

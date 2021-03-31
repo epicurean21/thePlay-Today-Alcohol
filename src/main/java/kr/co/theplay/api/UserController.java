@@ -307,4 +307,22 @@ public class UserController {
         SingleResult<AlarmResDto> result = responseService.getSingleResult(alarmResDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "개정 공개 비공개 여부", notes = "로그인 된 개정의 공개/비공개 여부를 조회한다")
+    @GetMapping(value = "/user/setting/privacy")
+    public ResponseEntity<SingleResult<UserChangePrivacyResDto>> getUserPrivacy() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        UserChangePrivacyResDto userChangePrivacyResDto = userService.getUserPrivacy(email);
+        SingleResult<UserChangePrivacyResDto> result = responseService.getSingleResult(userChangePrivacyResDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
