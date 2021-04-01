@@ -7,15 +7,15 @@ import java.util.Arrays;
 @Getter
 public enum IconKind {
 
-    drink1("01", "Drinks/soju/main"),
-    drink2("02", "Drinks/soju/0"),
-    drink3("03", "Drinks/soju/1"),
-    drink4("04", "Drinks/soju/2"),
-    drink5("05", "Drinks/soju/3"),
-    drink6("06", "Drinks/soju/4"),
-    drink7("07", "Drinks/soju/5"),
-    drink8("08", "Drinks/soju/6"),
-    drink9("09", "Drinks/soju/7"),
+    drink1("1", "Drinks/soju/main"),
+    drink2("2", "Drinks/soju/0"),
+    drink3("3", "Drinks/soju/1"),
+    drink4("4", "Drinks/soju/2"),
+    drink5("5", "Drinks/soju/3"),
+    drink6("6", "Drinks/soju/4"),
+    drink7("7", "Drinks/soju/5"),
+    drink8("8", "Drinks/soju/6"),
+    drink9("9", "Drinks/soju/7"),
     drink10("10", "Drinks/soju/8"),
     drink11("11", "Drinks/soju/B"),
 

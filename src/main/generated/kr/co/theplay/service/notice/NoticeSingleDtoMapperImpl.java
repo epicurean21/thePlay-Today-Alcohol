@@ -6,8 +6,8 @@ import kr.co.theplay.dto.notice.NoticeSingleDto;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-03-28T17:04:21+0900",
-    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 15.0.1 (AdoptOpenJDK)"
+    date = "2021-04-01T19:06:47+0900",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 1.8.0_191-1-ojdkbuild (Oracle Corporation)"
 )
 public class NoticeSingleDtoMapperImpl implements NoticeSingleDtoMapper {
 
