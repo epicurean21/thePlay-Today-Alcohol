@@ -42,6 +42,9 @@ public class PostResDto {
     @ApiModelProperty(value = "게시글 댓글 개수", dataType = "Integer", required = true, example = "2")
     private Long commentCnt;
 
+    @ApiModelProperty(value = "게시글 대표 댓글 유저 닉네임", dataType = "String", required = true, example = "우아한 보드카")
+    private String commentNickname;
+
     @ApiModelProperty(value = "게시글 대표 댓글", dataType = "String", required = true, example = "게시글의 댓글입니다.")
     private String comment;
 

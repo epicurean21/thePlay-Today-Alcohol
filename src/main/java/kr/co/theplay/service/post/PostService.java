@@ -160,12 +160,14 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
-            //대표 댓글 세팅
+            //대표 댓글 작성자 및 내용 세팅
             if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setCommentNickname(comment.getUser().getNickname());
                 dtos.get(i).setComment(comment.getContent());
             } else {
                 dtos.get(i).setComment("N");
+                dtos.get(i).setCommentNickname("N");
             }
 
             //레시피가 있는 경우 검색
@@ -235,11 +237,14 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
+            //대표 댓글 작성자 및 내용 세팅
             if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setCommentNickname(comment.getUser().getNickname());
                 dtos.get(i).setComment(comment.getContent());
             } else {
                 dtos.get(i).setComment("N");
+                dtos.get(i).setCommentNickname("N");
             }
 
             //레시피가 있는 경우 검색
@@ -442,12 +447,14 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
-            //대표 댓글 세팅
+            //대표 댓글 작성자 및 내용 세팅
             if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setCommentNickname(comment.getUser().getNickname());
                 dtos.get(i).setComment(comment.getContent());
             } else {
                 dtos.get(i).setComment("N");
+                dtos.get(i).setCommentNickname("N");
             }
 
             //레시피가 있는 경우 검색
@@ -569,12 +576,14 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
-            // 댓글이 0개가 아니라면 최신 댓글을 한개 가져온다. 없다면 N으로 지정하자
+            //대표 댓글 작성자 및 내용 세팅
             if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setCommentNickname(comment.getUser().getNickname());
                 dtos.get(i).setComment(comment.getContent());
             } else {
                 dtos.get(i).setComment("N");
+                dtos.get(i).setCommentNickname("N");
             }
 
             //레시피가 있는 경우 검색
@@ -641,11 +650,14 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
+            //대표 댓글 작성자 및 내용 세팅
             if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setCommentNickname(comment.getUser().getNickname());
                 dtos.get(i).setComment(comment.getContent());
             } else {
                 dtos.get(i).setComment("N");
+                dtos.get(i).setCommentNickname("N");
             }
 
             //레시피가 있는 경우 검색
@@ -718,11 +730,14 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
+            //대표 댓글 작성자 및 내용 세팅
             if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setCommentNickname(comment.getUser().getNickname());
                 dtos.get(i).setComment(comment.getContent());
             } else {
                 dtos.get(i).setComment("N");
+                dtos.get(i).setCommentNickname("N");
             }
 
             //레시피가 있는 경우 검색
@@ -784,12 +799,14 @@ public class PostService {
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
 
-            // 댓글이 0개가 아니라면 최신 댓글을 한개 가져온다. 없다면 N으로 지정하자
+            //대표 댓글 작성자 및 내용 세팅
             if (commentCnt != 0) {
                 PostComment comment = postCommentRepository.findFirstByPostIdAndPostCommentParentIdOrderByCreatedDateDesc(postList.get(i).getId(), (long) 0);
+                dtos.get(i).setCommentNickname(comment.getUser().getNickname());
                 dtos.get(i).setComment(comment.getContent());
             } else {
                 dtos.get(i).setComment("N");
+                dtos.get(i).setCommentNickname("N");
             }
 
             //레시피가 있는 경우 검색
