@@ -115,7 +115,7 @@ public class PostController {
     })
     @ApiOperation(value = "게시글 댓글 조회", notes = "게시글의 댓글과 대댓글을 조회한다")
     @GetMapping(value = "/posts/{postId}/comments")
-    public ResponseEntity<ListResult<PostCommentDto>> getUserPostsLike(@PathVariable Long postId) {
+    public ResponseEntity<ListResult<PostCommentDto>> getPostComments(@PathVariable Long postId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -135,7 +135,7 @@ public class PostController {
     })
     @ApiOperation(value = "게시글 댓글 작성", notes = "댓글을 작성한다")
     @PostMapping(value = "/posts/{postId}/comments")
-    public ResponseEntity<CommonResult> getUserPostsLike(@PathVariable Long postId, @RequestBody PostCommentReqDto postCommentReqDto) {
+    public ResponseEntity<CommonResult> uploadPostComment(@PathVariable Long postId, @RequestBody PostCommentReqDto postCommentReqDto) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();

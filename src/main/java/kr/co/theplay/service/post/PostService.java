@@ -145,6 +145,10 @@ public class PostService {
             else
                 dtos.get(i).setPostLikeYn("N");
 
+            // 좋아요 개수 확인
+            Integer postLikeCnt = postLikeRepository.countPostLikeByPostId(dtos.get(i).getPostId());
+            dtos.get(i).setPostLikeCnt(postLikeCnt);
+
             // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
             if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
                     userRecipeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
@@ -217,6 +221,9 @@ public class PostService {
                 dtos.get(i).setPostLikeYn("Y");
             else
                 dtos.get(i).setPostLikeYn("N");
+
+            Integer postLikeCnt = postLikeRepository.countPostLikeByPostId(dtos.get(i).getPostId());
+            dtos.get(i).setPostLikeCnt(postLikeCnt);
 
             // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
             if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
@@ -421,6 +428,9 @@ public class PostService {
                 dtos.get(i).setPostLikeYn("N");
             }
 
+            Integer postLikeCnt = postLikeRepository.countPostLikeByPostId(dtos.get(i).getPostId());
+            dtos.get(i).setPostLikeCnt(postLikeCnt);
+
             // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
             if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
                     userRecipeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
@@ -552,6 +562,9 @@ public class PostService {
             else
                 dtos.get(i).setSaveRecipeYn("N");
 
+            Integer postLikeCnt = postLikeRepository.countPostLikeByPostId(dtos.get(i).getPostId());
+            dtos.get(i).setPostLikeCnt(postLikeCnt);
+
             //댓글 수 세팅
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
             dtos.get(i).setCommentCnt(commentCnt);
@@ -614,6 +627,9 @@ public class PostService {
                 dtos.get(i).setPostLikeYn("Y");
             else
                 dtos.get(i).setPostLikeYn("N");
+
+            Integer postLikeCnt = postLikeRepository.countPostLikeByPostId(dtos.get(i).getPostId());
+            dtos.get(i).setPostLikeCnt(postLikeCnt);
 
             // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
             if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
@@ -689,6 +705,9 @@ public class PostService {
             else
                 dtos.get(i).setPostLikeYn("N");
 
+            Integer postLikeCnt = postLikeRepository.countPostLikeByPostId(dtos.get(i).getPostId());
+            dtos.get(i).setPostLikeCnt(postLikeCnt);
+
             // 게시글의 레시피 저장 여부, 레시피가 존재하면서 저장 했다면
             if (dtos.get(i).getHaveRecipeYn().equals("Y") &&
                     userRecipeRepository.findByPostIdAndUserEmail(postList.get(i).getId(), email).isPresent())
@@ -757,6 +776,9 @@ public class PostService {
                 dtos.get(i).setSaveRecipeYn("Y");
             else
                 dtos.get(i).setSaveRecipeYn("N");
+
+            Integer postLikeCnt = postLikeRepository.countPostLikeByPostId(dtos.get(i).getPostId());
+            dtos.get(i).setPostLikeCnt(postLikeCnt);
 
             //댓글 수 세팅
             Long commentCnt = postCommentRepository.getCountOfPostComment(postList.get(i).getId());
