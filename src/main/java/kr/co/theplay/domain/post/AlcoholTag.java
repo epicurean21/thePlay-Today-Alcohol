@@ -39,7 +39,7 @@ public class AlcoholTag extends BaseTimeEntity {
     @Column
     private String recipeYn;
 
-    @OneToMany(mappedBy = "alcoholTag", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "alcoholTag", cascade = CascadeType.REMOVE)
     private List<UserRecipe> userRecipes = new ArrayList<>();
 
     @Builder
