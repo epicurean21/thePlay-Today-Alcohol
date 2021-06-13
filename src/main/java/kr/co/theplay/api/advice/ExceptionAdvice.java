@@ -30,7 +30,7 @@ public class ExceptionAdvice {
      */
 
     @ExceptionHandler(CommonNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.OK)
     protected CommonResult CommonNotFound(HttpServletRequest request, CommonNotFoundException e) {
         return generateFailResult(request, e);
     }
@@ -40,7 +40,7 @@ public class ExceptionAdvice {
      */
 
     @ExceptionHandler(CommonBadRequestException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     protected CommonResult CommonBadRequest(HttpServletRequest request, CommonBadRequestException e) {
         return generateFailResult(request, e);
     }
@@ -50,7 +50,7 @@ public class ExceptionAdvice {
      */
 
     @ExceptionHandler(CommonConflictException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.OK)
     protected CommonResult CommonConflict(HttpServletRequest request, CommonConflictException e) {
         return generateFailResult(request, e);
     }
@@ -60,7 +60,7 @@ public class ExceptionAdvice {
      */
 
     @ExceptionHandler(ApiParamNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     protected CommonResult apiParamNotValid(HttpServletRequest request, ApiParamNotValidException e) {
         return responseService.getSingleParamFailResult(e.getErrors());
     }
