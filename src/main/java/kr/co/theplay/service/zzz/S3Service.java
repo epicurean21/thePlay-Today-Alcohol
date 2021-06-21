@@ -21,7 +21,7 @@ import java.util.Date;
 @Service
 @NoArgsConstructor
 public class S3Service {
-    public static final String CLOUD_FRONT_DOMAIN_NAME = "d2tkmpefgqef0b.cloudfront.net";
+    public static final String CLOUD_FRONT_DOMAIN_NAME = "d3a2h23el0lzek.cloudfront.net";
     public static final int MAXIMUM_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
     private AmazonS3 s3Client;
@@ -48,7 +48,6 @@ public class S3Service {
     }
 
     public String upload(MultipartFile file) throws IOException {
-        // AWS S3 서버에 업로드
 
         // 이미지 크기가 너무 크다면 에러
         if (file.getSize() > MAXIMUM_FILE_SIZE) {

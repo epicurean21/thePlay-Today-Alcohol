@@ -58,8 +58,6 @@ public class ImageService {
     @Transactional
     public void savePostDto(List<MultipartFile> files, ImageUploadToS3Dto imageUploadToS3Dto) throws IOException {
 
-//        List<MultipartFile> files = imageUploadToS3Dto.getFiles();
-
         SimpleDateFormat date = new SimpleDateFormat("yyyymmddHHmmsss");
         String thumbnailPath = files.get(0).getOriginalFilename()+"-" + date.format(new Date());
 
