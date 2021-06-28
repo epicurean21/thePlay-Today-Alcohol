@@ -101,7 +101,7 @@ followingUserNotFound:
 
 followerUserNotFound:
   code: "-3003"
-  msg: "나를 팔로잉 하고있지 않습니다."
+  msg: "회원님을 팔로잉하지 않는 회원입니다."
 
 blockConflict:
   code: "-3004"
