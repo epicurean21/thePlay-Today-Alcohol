@@ -114,7 +114,7 @@ public class PostController {
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "게시글 댓글 조회", notes = "게시글의 댓글과 대댓글을 조회한다")
-    @GetMapping(value = "/posts/{postId}/comments")
+    @GetMapping(value = "/post/{postId}/comments")
     public ResponseEntity<ListResult<PostCommentDto>> getPostComments(@PathVariable Long postId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -134,7 +134,7 @@ public class PostController {
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "게시글 댓글 작성", notes = "댓글을 작성한다")
-    @PostMapping(value = "/posts/{postId}/comments")
+    @PostMapping(value = "/post/{postId}/comment")
     public ResponseEntity<CommonResult> uploadPostComment(@PathVariable Long postId, @RequestBody PostCommentReqDto postCommentReqDto) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
