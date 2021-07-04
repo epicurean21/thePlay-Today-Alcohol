@@ -8,11 +8,13 @@ import kr.co.theplay.domain.notice.Alarm;
 import kr.co.theplay.domain.notice.AlarmRepository;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
+import kr.co.theplay.dto.firebase.FcmMessage;
 import kr.co.theplay.dto.follow.FollowUserDto;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.advice.exception.CommonNotFoundException;
 import kr.co.theplay.service.api.common.ResponseService;
+import kr.co.theplay.service.firebase.FirebaseCloudMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,8 @@ public class FollowService {
     private final BlockRepository blockRepository;
     private final AlarmRepository alarmRepository;
     private final ResponseService responseService;
+
+    private final FirebaseCloudMessageService fcmService;
 
     @Transactional
     public void followUser(String email, Long userId) {
@@ -144,5 +148,8 @@ public class FollowService {
                         followedUser.getNickname() + "님이 회원님을 팔로잉 합니다."
                 ).user(followedUser).userSend(user).readYn("N").type("follow").build();
         alarmRepository.save(alarm);
+        
+        //새 알람 존재 여부 변경
+        user.changeNewAlarmYn("Y");
     }
 }

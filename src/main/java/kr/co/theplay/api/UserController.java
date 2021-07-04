@@ -275,6 +275,24 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
     })
+    @ApiOperation(value = "새 알람 생성 여부 조회", notes = "새 알람이 생성되었는지 여부를 조회한다.")
+    @GetMapping(value = "/alarms/new-alarm-yn")
+    public ResponseEntity<SingleResult<UserAlarmNewYnDto>> getNewAlarmYn(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        if (email.equals("anonymousUser")) {
+            throw new CommonConflictException("accessException");
+        }
+
+        UserAlarmNewYnDto alarmNewYnDto = userService.getNewAlarmYn(email);
+        SingleResult<UserAlarmNewYnDto> result = responseService.getSingleResult(alarmNewYnDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
     @ApiOperation(value = "알람 목록 조회", notes = "알람 목록을 조회한다")
     @GetMapping(value = "/alarms")
     public ResponseEntity<ListResult<AlarmResDto>> getAlarm() {

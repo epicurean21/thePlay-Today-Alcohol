@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "today-alcohol",
+  "private_key_id": "a27392ef8d9103a86db6dc3bf6c2865c506f0f65",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDumKS0pXHzPyNy\nExsZs1rbN3SUSd/zLZ6KO4u7cRLEB84MzFi/qUk052YloQBgAz7yGChHmP8cEzRe\nHmGF8tcAQ+Zfgf7HLCYLhH2H8BxivLQ9QwLWmffYj22wC1haA9D5lgyZDiHp5lCN\nc21RSQhdHmWkpIxNx1voYTpldjED070aVSH3Z73cyWFwe+NQ76iesYaRsE2FA5sK\nXpLzlZOSgvy8IF7bKHfQv0Se0j3FgoM+AA0NOhIC1m6spvTRpemERhXu6IiTxevY\nGup1fgrzebhaifT+QM1VazadHHwd1UiMk8YPR29ygZc/4WrmBJTR74p6GJPW9fkU\n2ilCCi6hAgMBAAECggEAa80O2cnIluFHmBJ206FcIyDGrPtF0p8hew5VX27CzkxC\ndjjbvljzyRHl7ol0XG0LAyIUDOldFie9KOssH/Os3aNQEoXvAbl6RQjrGMDNanUd\nMHK29RQizbdcFUbC+ASyZho7/elLPF2Btq9YzHmlbEFAJmfsNnYlGfTYCCCjG7kv\nYyRpAadVbxBLHuIVzPiasNf0yozQZo9LgZeLCHryDtMYVSltOdnTL1KRm74Iwv/5\nifC2souDJE/uOKejLB8clliN9m9LwEpBy1zGYbAl9FRAJXOWcllDy0JErRLQUcaY\nSmS5uzAq/K6yengpBM5zMGQKH2gx4+/VHVBeYNYE6wKBgQD7JwIXaJgFmd0qyy4l\nwQcaeFDDxs6Vm/pZqWWv5XLz3DOlvK8+Pay4ab9erKqjh3QbJ/wUhApKKVaIN3hf\ngIT7oF3rdXKz4WwcubeQezwvYFcwuGBnBSvT+xbdEdYRhsj9lNf1KUF/pPOrIzja\nK1sFSRY4JASp/Yu2Sjl6pU+yZwKBgQDzM5fS/xjnY63JVFcgw/A32r/djyYCoX4F\npKQIpnvKLUoCK2KZdwyMQhStsNTu9LJL1T2Z4b7v2ZOoz0dfJDZeVcbRNpa64Vbo\nYUuvuG8RjJ98EFx4I5yuuDuh88Cv+6cvv0g9pLYFEFBgmeAjpev/aObJeQrG31gR\n9cK3057BtwKBgHhY3NuytwYYEK7s5ZQZxvmcJbdqkJuIPpKwZZW/8TGBlw4YODEv\nBJDpu1X2j14FDlHk+xopm3SmElz7l6bLwu2AjwDBKtGfd1rcc2W8Z76b/6vM7gTv\nqWzOqMoOPfHwEGfS5xkHR+eOd2TOX/PLSrZhq1ADkmiSolwbfSeUB3iJAoGBAMuJ\nIkczt2PvyEH2k/SYBzK3oFuMsgMBpLaUU7PpoTBTNt0Z8ir9t0KrCyNSGuLhZ1aP\n4D4o7+NL9IgS8WhuphHNN9dgGEXO0S0qQG2PrWTCi7cI+lqRc0/GYCHqHhkqQ4Fy\nVMNCVhNm094E6dDry9a1tHBpHNvTj6F4TL4MHZGBAoGABqxQBOLOzR+1OjWyuiny\n+3Lq5/rC4xMiQLRe7Ld+7XQ+wSywKPpgcTnfCx7/YTVyQYIl0YbdRcL+UcBfjq3j\nhn5vcUF0xmCdFUuF9nGfbnNiDY9oTdosslb4EqQHEvMRNyam+5HHq4C5DvaC/Rc4\n7W0Qa1J/FqtTic7XJl6Firs=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-pjzw9@today-alcohol.iam.gserviceaccount.com",
+  "client_id": "106704615339114958739",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-pjzw9%40today-alcohol.iam.gserviceaccount.com"
+}

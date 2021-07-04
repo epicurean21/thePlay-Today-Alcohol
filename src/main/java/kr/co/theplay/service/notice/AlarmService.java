@@ -37,6 +37,9 @@ public class AlarmService {
                 alarmRepository.save(alarm.get(i));
             }
         }
+        //모두 확인했다면 사용자의 new-alarm-yn을 N으로 변경
+        user.changeNewAlarmYn("N");
+
         return alarmResDtos;
     }
 

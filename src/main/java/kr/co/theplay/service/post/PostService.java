@@ -902,6 +902,9 @@ public class PostService {
                 }
             }
         }
+        
+        //새 알람 존재 여부 변경
+        user.changeNewAlarmYn("Y");
     }
 
     @Transactional
@@ -916,5 +919,8 @@ public class PostService {
                     .build();
             alarmRepository.save(alarm);
         }
+
+        //새 알람 존재 여부 변경
+        user.changeNewAlarmYn("Y");
     }
 }

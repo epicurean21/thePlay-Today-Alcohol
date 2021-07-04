@@ -36,14 +36,22 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column
     private String privacyYn;
 
+    @Column
+    private String newAlarmYn;
+
     @Builder
     public User(Long id, String email, String password, String nickname,
-                String privacyYn) {
+                String privacyYn, String newAlarmYn) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.privacyYn = privacyYn;
+        this.newAlarmYn = newAlarmYn;
+    }
+
+    public void changeNewAlarmYn(String yn){
+        this.newAlarmYn = yn;
     }
 
     public String changePrivacyYn(){

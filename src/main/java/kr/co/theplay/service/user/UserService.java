@@ -258,4 +258,15 @@ public class UserService {
         UserChangePrivacyResDto userChangePrivacyResDto = UserChangePrivacyResDto.builder().privacyYn(user.getPrivacyYn()).build();
         return userChangePrivacyResDto;
     }
+
+    public UserAlarmNewYnDto getNewAlarmYn(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CommonNotFoundException("userNotFound"));
+        UserAlarmNewYnDto userAlarmNewYnDto;
+        if(user.getNewAlarmYn().equals("Y")){
+            userAlarmNewYnDto = UserAlarmNewYnDto.builder().newAlarmYn("Y").build();
+        }else{
+            userAlarmNewYnDto = UserAlarmNewYnDto.builder().newAlarmYn("N").build();
+        }
+        return userAlarmNewYnDto;
+    }
 }
