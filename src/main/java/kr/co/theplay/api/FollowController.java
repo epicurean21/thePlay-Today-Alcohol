@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import kr.co.theplay.domain.user.User;
+import kr.co.theplay.dto.follow.BlockedUserDto;
 import kr.co.theplay.dto.follow.FollowUserDto;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
 import kr.co.theplay.service.api.common.ResponseService;
@@ -158,6 +159,23 @@ public class FollowController {
         followService.blockFollower(email, userId);
 
         return new ResponseEntity<>(responseService.getSuccessResult(), HttpStatus.OK);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", value = "Access Token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "차단한 이용자 목록 조회", notes = "차단한 이용자 목록을 조회한다.")
+    @GetMapping(value = "/user/followers/blocks")
+    public ResponseEntity<ListResult<BlockedUserDto>> getBlockedUsers(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        if(email.equals("anonymousUser")){
+            throw new CommonConflictException("accessException");
+        }
+        List<BlockedUserDto> blockedUserDtos = followService.getBlockedUsers(email);
+        ListResult<BlockedUserDto> result = responseService.getListResult(blockedUserDtos);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }

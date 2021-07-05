@@ -6,7 +6,7 @@ import kr.co.theplay.dto.notice.NoticeListDto;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-04-01T19:06:47+0900",
+    date = "2021-07-04T17:14:56+0900",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 1.8.0_191-1-ojdkbuild (Oracle Corporation)"
 )
 public class NoticeListDtoMapperImpl implements NoticeListDtoMapper {

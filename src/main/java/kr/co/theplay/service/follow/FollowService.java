@@ -9,6 +9,7 @@ import kr.co.theplay.domain.notice.AlarmRepository;
 import kr.co.theplay.domain.user.User;
 import kr.co.theplay.domain.user.UserRepository;
 import kr.co.theplay.dto.firebase.FcmMessage;
+import kr.co.theplay.dto.follow.BlockedUserDto;
 import kr.co.theplay.dto.follow.FollowUserDto;
 import kr.co.theplay.service.api.advice.exception.CommonBadRequestException;
 import kr.co.theplay.service.api.advice.exception.CommonConflictException;
@@ -151,5 +152,13 @@ public class FollowService {
         
         //새 알람 존재 여부 변경
         user.changeNewAlarmYn("Y");
+    }
+
+    public List<BlockedUserDto> getBlockedUsers(String email) {
+        List<Block> blocks = blockRepository.findAllByEmail(email);
+        List<BlockedUserDto> dtos = blocks.stream().map(
+                b -> BlockedUserDto.builder().blocked_user_name(b.getUserBlock().getNickname()).build()
+        ).collect(Collectors.toList());
+        return dtos;
     }
 }
