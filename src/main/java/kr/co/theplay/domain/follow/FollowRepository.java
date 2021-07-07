@@ -1,5 +1,6 @@
 package kr.co.theplay.domain.follow;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import kr.co.theplay.domain.user.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,4 +41,6 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     @EntityGraph(attributePaths = {"userFollow"})
     @Query("select count (f) from Follow f where f.userFollow.email = :email")
     Long findFollowersCountByUser(@Param("email") String email);
+
+    Boolean existsFollowByUserAndUserFollow(User user, User userFollow);
 }

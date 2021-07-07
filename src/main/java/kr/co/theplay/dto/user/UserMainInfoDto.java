@@ -23,12 +23,16 @@ public class UserMainInfoDto {
     @ApiModelProperty(value = "나의 레시피 수", dataType = "Long", required = true, example = "1")
     private Long recipes;
 
+    @ApiModelProperty(value = "팔로잉 여부", dataType = "String", required = true, example = "Y")
+    private String followingYn;
+
     @Builder
-    public UserMainInfoDto(String nickname, Long posts, Long likes, Long followers, Long recipes) {
+    public UserMainInfoDto(String nickname, Long posts, Long likes, Long followers, Long recipes, String followingYn) {
         this.nickname = nickname;
         this.posts = posts;
         this.likes = likes;
         this.followers = followers;
         this.recipes = recipes;
+        this.followingYn = followingYn;
     }
 }
