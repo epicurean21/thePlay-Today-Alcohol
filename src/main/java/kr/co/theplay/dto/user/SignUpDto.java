@@ -21,7 +21,7 @@ public class SignUpDto {
     private String email;
 
     @ApiModelProperty(value = "비밀번호", dataType = "String", required = true, example = "aaaa1234")
-    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{6,12}", message = "비밀번호는 영어와 숫자로 포함해서 6~12자리 이내로 입력해주세요.")
+    @Pattern(regexp = "[A-Za-z0-9~!@#$%^&*()+|=]{6,12}", message = "비밀번호는 영어와 숫자로 포함해서 6~12자리 이내로 입력해주세요.")
     private String password;
 
     @ApiModelProperty(value = "비밀번호 확인", dataType = "String", required = true, example = "aaaa1234")
